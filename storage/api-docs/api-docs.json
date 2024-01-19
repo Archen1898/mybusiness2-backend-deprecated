@@ -2139,6 +2139,286 @@
                 ]
             }
         },
+        "/api/meeting_pattern/index": {
+            "get": {
+                "tags": [
+                    "Meeting pattern"
+                ],
+                "summary": "Get all Meeting patterns",
+                "operationId": "indexMeetingPattern",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                }
+            }
+        },
+        "/api/meeting_pattern/{id}": {
+            "get": {
+                "tags": [
+                    "Meeting pattern"
+                ],
+                "summary": "Get meeting pattern by ID",
+                "operationId": "showMeetingPattern",
+                "parameters": [
+                    {
+                        "name": "day",
+                        "in": "path",
+                        "description": "String",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "Monday"
+                        }
+                    },
+                    {
+                        "name": "hour",
+                        "in": "path",
+                        "description": "String",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "19:00"
+                        }
+                    },
+                    {
+                        "name": "room id",
+                        "in": "path",
+                        "description": "Uuid",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                }
+            }
+        },
+        "/api/meeting_pattern/add": {
+            "post": {
+                "tags": [
+                    "Meeting pattern"
+                ],
+                "summary": "Create meeting pattern",
+                "operationId": "d05a0ef029c1dd6a4fb68a622e4f5c83",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "properties": {
+                                            "day": {
+                                                "type": "string"
+                                            },
+                                            "hour": {
+                                                "type": "string"
+                                            },
+                                            "room_id": {
+                                                "type": "uuid"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "day": "Monday",
+                                    "hour": "19:00",
+                                    "room_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/meeting_pattern/update/{id}": {
+            "put": {
+                "tags": [
+                    "Meeting pattern"
+                ],
+                "summary": "Update meeting pattern",
+                "operationId": "e2309d527b177d9dc1329bdd2cf71827",
+                "parameters": [
+                    {
+                        "name": "day",
+                        "in": "path",
+                        "description": "String",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "Monday"
+                        }
+                    },
+                    {
+                        "name": "hour",
+                        "in": "path",
+                        "description": "String",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "19:00"
+                        }
+                    },
+                    {
+                        "name": "room id",
+                        "in": "path",
+                        "description": "Uuid",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "properties": {
+                                            "day": {
+                                                "type": "string"
+                                            },
+                                            "hour": {
+                                                "type": "string"
+                                            },
+                                            "room_id": {
+                                                "type": "uuid"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "day": "Monday",
+                                    "hour": "19:00",
+                                    "room_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/meeting_pattern/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Meeting pattern"
+                ],
+                "summary": "Delete meeting pattern by id",
+                "operationId": "deleteMeetingPattern",
+                "parameters": [
+                    {
+                        "name": "day",
+                        "in": "path",
+                        "description": "String",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "Monday"
+                        }
+                    },
+                    {
+                        "name": "hour",
+                        "in": "path",
+                        "description": "String",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "19:00"
+                        }
+                    },
+                    {
+                        "name": "room id",
+                        "in": "path",
+                        "description": "Uuid",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                }
+            }
+        },
         "/api/permission/index": {
             "get": {
                 "tags": [
@@ -3531,6 +3811,28 @@
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/roles/total": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Obtain by role the user number and their avatars",
+                "operationId": "getTotalUserRoleAvatars",
                 "responses": {
                     "200": {
                         "description": "successful operation"

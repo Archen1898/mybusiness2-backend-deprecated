@@ -59,6 +59,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::controller(RoleController::class)->group(function(){
         Route::get('role/index','indexRoles')->middleware('permission:List of roles.');
+        Route::get('role/total', 'getTotalUserRoleAvatars')->middleware('permission:List of roles.');
         Route::get('role/{id}', 'showRole')->middleware('permission:Search role by ID.');
         Route::post('role/add', 'addRole')->middleware('permission:Create a role.');
         Route::put('role/update/{id}', 'updateRole')->middleware('permission:Update a role.');
@@ -234,4 +235,5 @@ Route::middleware('auth:api')->group(function () {
     });
 
 });
+
 
