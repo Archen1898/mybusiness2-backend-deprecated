@@ -192,4 +192,14 @@ class AuthController extends Controller
 
         }
     }
+
+    public function verifyToken(): JsonResponse
+    {
+        try {
+            $data = $this->auth->verifyAuthenticatedToken();
+            return $this->response(Response::HTTP_OK,$data,$data,null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_NOT_FOUND, $exception->getMessage(),[],null);
+        }
+    }
 }

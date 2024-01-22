@@ -40,6 +40,7 @@ use App\Http\Middleware\CheckPermission;
 */
 Route::controller(AuthController::class)->group(function(){
     Route::post('login','login')->name('login');
+    Route::get('verify','verifyToken');
     Route::post('register','register')->name('register');
 });
 

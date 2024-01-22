@@ -6,15 +6,13 @@ namespace  App\Repositories;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\PersonalAccessTokenResult;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 //LOCAL IMPORT
 use App\Models\User;
+use App\Http\Requests\LoginRequest;
 
 
 class AuthRepository
@@ -22,6 +20,7 @@ class AuthRepository
     /**
      * @throws Exception
      */
+
     public function login(array $data): array
     {
         $user = $this->getUserByEmail($data['email']);
@@ -110,5 +109,16 @@ class AuthRepository
             'active'=>$data['active']
         ];
     }
+
+    public function verifyAuthenticatedToken(): bool
+    {
+        $user = auth()->guard('api')->user();
+        if ($user){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 }
 
