@@ -4,6 +4,7 @@ namespace  App\Repositories;
 
 //GLOBAL IMPORT
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\PersonalAccessTokenResult;
 use Symfony\Component\HttpFoundation\Response;
@@ -110,14 +111,23 @@ class AuthRepository
         ];
     }
 
-    public function verifyAuthenticatedToken(): bool
+    /**
+     * @throws Exception
+     */
+    public function verifyAuthenticatedToken($request)
     {
-        $user = auth()->guard('api')->user();
-        if ($user){
-            return true;
-        }else {
-            return false;
+        $user = User::where('id', optional(Auth::guard('api')->user())->id)->first();
+        if (!$user){
+            throw new Exception("Sorry, something is wrong. Please try again.", response::HTTP_INTERNAL_SERVER_ERROR);
         }
+        $roles = $user->getRoleNames();
+        if ($roles){
+            $user->role= $roles[0];
+        }
+        $permissions = $user->getPermissionNames();
+        $user->permissions = $permissions;
+        $user->accessToken = str_replace('Bearer ', '', $request->header('Authorization'));
+        return $user;
     }
 
 }

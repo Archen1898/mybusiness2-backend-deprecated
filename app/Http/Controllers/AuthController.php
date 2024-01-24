@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 //GLOBAL IMPORT
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Http\JsonResponse;
 use Exception;
 
@@ -193,11 +194,13 @@ class AuthController extends Controller
         }
     }
 
-    public function verifyToken(): JsonResponse
+    public function verifyToken(Request $request): JsonResponse
     {
         try {
-            $data = $this->auth->verifyAuthenticatedToken();
-            return $this->response(Response::HTTP_OK,$data,$data,null);
+//            $token = $request->header('Authorization');
+//            $data = $this->auth->verifyAuthenticatedToken($token);
+            $data = $this->auth->verifyAuthenticatedToken($request);
+            return $this->response(Response::HTTP_OK,"User fetched successfully.",$data,null);
         } catch (Exception $exception) {
             return $this->response(Response::HTTP_NOT_FOUND, $exception->getMessage(),[],null);
         }
