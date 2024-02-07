@@ -65,6 +65,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('role/add', 'addRole')->middleware('permission:Create a role.');
         Route::put('role/update/{id}', 'updateRole')->middleware('permission:Update a role.');
         Route::delete('role/delete/{id}', 'deleteRole')->middleware('permission:Delete a role.');
+//        Route::get('role/permissions/{role}','getPermissionsByRoleName')->middleware('permission:List of roles.');
     });
 
     Route::controller(RoleHasPermissionController::class)->group(function(){

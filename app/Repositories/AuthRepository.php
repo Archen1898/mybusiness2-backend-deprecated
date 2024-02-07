@@ -32,7 +32,7 @@ class AuthRepository
             throw new Exception("Sorry, password does not match.", response::HTTP_UNAUTHORIZED);
         }
         $permissions = $user->getPermissionNames();
-        $roles = $user->getRoleNames();
+        $roles = $user->getRoleNames()->first();
 
         $tokenInstance = $this->createAuthToken($user);
         return $this->getAuthData($user, $tokenInstance, $roles, $permissions);

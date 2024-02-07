@@ -295,8 +295,47 @@ class RoleController extends Controller
         try {
             return $this->response(Response::HTTP_OK, 'Role deleted successfully.', $this->roleRepository->totalUserRoleAvatars(), null);
         } catch (Exception $exception) {
-            return $this->response(Response::HTTP_BAD_REQUEST, 'aaaa', [], $exception->getMessage());
+            return $this->response(Response::HTTP_BAD_REQUEST, 'Something wrong happened, please try another time', [], $exception->getMessage());
         }
     }
+//    /**
+//     * * Get program grouping by ID
+//     * @OA\Get(
+//     *     path="/api/role/permissions/{role}",
+//     *     tags={"Roles"},
+//     *     operationId="getPermissionsByRoleName",
+//     *     @OA\Parameter(
+//     *         name="role",
+//     *         in="path",
+//     *         description="Role name",
+//     *         required=true,
+//     *         explode=true,
+//     *         @OA\Schema(
+//     *             default="Administrator",
+//     *             type="string"
+//     *         )
+//     *     ),
+//     *     security={{"bearer":{}}},
+//     *     @OA\Response(
+//     *         response=200,
+//     *         description="successful operation",
+//     *     ),
+//     *     @OA\Response(
+//     *         response=400,
+//     *         description="Invalid status value"
+//     *     )
+//     * )
+//     *
+//     * @param string $role
+//     * @return JsonResponse
+//     */
+//    public function getPermissionsByRoleName(string $role):JsonResponse
+//    {
+//        try {
+//            return $this->response(Response::HTTP_OK, 'Permissions fetched successfully.', $this->roleRepository->permissionByRole($role), null);
+//        } catch (Exception $exception) {
+//            return $this->response(Response::HTTP_BAD_REQUEST, 'Something wrong happened, please try another time', [], $exception->getMessage());
+//        }
+//    }
 
 }

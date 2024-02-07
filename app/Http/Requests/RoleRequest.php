@@ -25,7 +25,7 @@ class RoleRequest extends ApiFormRequest
     {
         return [
             'name.required' => 'Required field.',
-            'name.unique' => 'There is already a permission with this name.',
+            'name.unique' => 'There is already a role with this name.',
             'name.max' => 'Field must have a maximum of 255 characters.',
             'guard_name.required' => 'Required field.',
             'guard_name.max' => 'Field must have a maximum of 255 characters.',

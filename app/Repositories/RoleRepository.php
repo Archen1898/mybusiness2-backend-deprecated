@@ -122,6 +122,13 @@ class RoleRepository implements CrudInterface
         }
     }
 
+//    public function permissionByRole($role): array
+//    {
+//        $role = Role::findByName('Administrator');
+//        var_dump($role);
+//        return $role->permissions->pluck('name')->toArray();
+//    }
+
     public function dataFormat(array $data,string $type = null): array
     {
         if ($type){

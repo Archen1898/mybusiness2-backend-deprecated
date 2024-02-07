@@ -26,14 +26,12 @@ class RoleHasPermissionRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'permissions' => ['required','array','min:1']
+            'permissions' => ['array']
         ];
     }
     public function messages():array
     {
         return [
-            'permissions.required' => 'Required field.',
-            'permissions.min' => 'Field must have a minimum of 1 element.',
             'permissions.array' => 'Field must be type array of string.'
         ];
     }
