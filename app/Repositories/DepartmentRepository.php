@@ -38,7 +38,7 @@ class DepartmentRepository implements CrudInterface,ActiveInterface
     public function viewAll()
     {
         try {
-            $departments = Department::orderBy('name','desc')->get();
+            $departments = Department::with('college')->orderBy('name','desc')->get();
             if ($departments->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.department.exceptionNotFoundAll'));
             }

@@ -39,7 +39,7 @@ class BuildingRepository implements CrudInterface,ActiveInterface
     public function viewAll()
     {
         try {
-            $buildings = Building::orderBy('name','desc')->get();
+            $buildings = Building::with('campus')->orderBy('name','desc')->get();
             if ($buildings->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.building.exceptionNotFoundAll'));
             }

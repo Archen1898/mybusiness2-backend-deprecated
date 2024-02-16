@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('gn.departments', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->string('code',25);
-            $table->string('name',100);
+            $table->string('name',200);
             $table->string('description',255)->nullable();
 
             //defined relation with table college

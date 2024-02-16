@@ -29,7 +29,7 @@ class DepartmentRequest extends ApiFormRequest
     {
         return [
             'code' => ['required','string','max:25',Rule::unique($this->getDbDefault('gn.departments'))->ignore($this->id)],
-            'name' => ['required','string','max:100',Rule::unique($this->getDbDefault('gn.departments'))->ignore($this->id)],
+            'name' => ['required','string','max:200',Rule::unique($this->getDbDefault('gn.departments'))->ignore($this->id)],
             'description' => ['string','max:255','nullable'],
             'college_id' => ['uuid','max:36','nullable'],
             'active' => ['boolean','nullable']
@@ -44,7 +44,7 @@ class DepartmentRequest extends ApiFormRequest
             'name.required' => 'Required field.',
             'name.unique' => 'There is already a department with this name.',
             'name.max' => 'Field must have a maximum of 255 characters.',
-            'description.max' => 'Field must have a maximum of 100 characters.',
+            'description.max' => 'Field must have a maximum of 200 characters.',
             'college_id.uuid' => 'Field must be type uuid.',
             'college_id.max' => 'Field must have a maximum of 36 characters.',
             'active.boolean' => 'Field must be type 1 or 0.'

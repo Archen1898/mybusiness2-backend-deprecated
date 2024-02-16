@@ -56,8 +56,7 @@ class UserRepository
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e){
-//            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
-            throw new Exception($e->getMessage());
+            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -147,6 +146,11 @@ class UserRepository
             $user->updated_at= $request['updated_at'];
             $user->active = $request['active'];
             $user->department_id = $request['department_id'];
+            $user->address = $request['address'];
+            $user->phone = $request['phone'];
+            $user->job_title = $request['job_title'];
+            $user->work_phone = $request['work_phone'];
+            $user->location = $request['location'];
             if(count($request['roles'])>0){
                 $user->syncRoles($request['roles']);
             }
