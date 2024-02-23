@@ -19,13 +19,14 @@ return new class extends Migration
                 ->on('ac.meeting_patterns')
                 ->onDelete('set null')
                 ->onUpdate('no action');
-            //defined relation with table meeting pattern
-            $table->uuid('instructor_id')->nullable();
-            $table->foreign('instructor_id')
+            //defined relation with table room
+            $table->uuid('user_id')->nullable();
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('ac.instructors')
+                ->on('users')
                 ->onDelete('set null')
                 ->onUpdate('no action');
+            $table->boolean('primary_instructor')->nullable();
         });
     }
 

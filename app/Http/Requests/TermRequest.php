@@ -28,7 +28,7 @@ class TermRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'term' => ['required','string','max:10','min:8',Rule::unique( $this->getDbDefault('ac.terms'))->ignore($this->id)],
+            'name' => ['required','string','max:10','min:8',Rule::unique( $this->getDbDefault('ac.terms'))->ignore($this->id)],
             'semester' => ['required','string','max:10'],
             'year' => ['required','integer'],
             'academic_year' => ['required','string','max:9'],
@@ -54,10 +54,10 @@ class TermRequest extends ApiFormRequest
     public function messages():array
     {
         return [
-            'term.required' => 'Required field.',
-            'term.unique' => 'There is already a Term with this code.',
-            'term.max' => 'Field must have a maximum of 10 characters.',
-            'term.min' => 'Field must have a maximum of 8 characters.',
+            'name.required' => 'Required field.',
+            'name.unique' => 'There is already a Term with this code.',
+            'name.max' => 'Field must have a maximum of 10 characters.',
+            'name.min' => 'Field must have a maximum of 8 characters.',
             'semester.required' => 'Required field.',
             'semester.max' => 'Field must have a maximum of 10 characters.',
             'year.integer' => 'Field must be type number.',

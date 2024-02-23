@@ -34,20 +34,25 @@ class SectionRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'status' => ['string','nullable','max:30'],
-            'term_id' => ['required','uuid','max:36'],
             'caps' =>['boolean','nullable'],
+            'term_id' => ['required','uuid','max:36'],
             'course_id' => ['required','uuid','max:36'],
-            'session_id' => ['required','uuid','max:36'],
+
+            'sec_code' => ['string','nullable','max:2'],
+            'sec_number' => ['string','nullable','max:2'],
+
             'cap' => ['integer','nullable'],
             'instructor_mode_id' => ['required','uuid','max:36'],
             'campus_id' => ['required','uuid','max:36'],
-            'starting_date' => ['required','date'],
-            'ending_date' => ['required','date'],
             'program_id' => ['required','uuid','max:36'],
             'cohorts' => ['string','nullable','max:255'],
+            'status' => ['string','nullable','max:100'],
             'combined' =>['boolean','nullable'],
             'comment' => ['string','nullable','max:255'],
+
+            'session_id' => ['required','uuid','max:36'],
+            'starting_date' => ['required','date'],
+            'ending_date' => ['required','date'],
             'internal_note' => ['string','nullable','max:255'],
             'meeting_patterns' => [new MeetingPatternsRule, 'nullable'],
             'instructors' => [new InstructorRule, 'nullable']
@@ -65,9 +70,6 @@ class SectionRequest extends ApiFormRequest
             'course_id.required' => 'Required field.',
             'course_id.uuid' => 'Field must be type uuid.',
             'course_id.max' => 'Field must have a maximum of 36 characters.',
-            'session_id.required' => 'Required field.',
-            'session_id.uuid' => 'Field must be type uuid.',
-            'session_id.max' => 'Field must have a maximum of 36 characters.',
             'cap.integer' => 'Field must be type number.',
             'instructor_mode_id.required' => 'Required field.',
             'instructor_mode_id.uuid' => 'Field must be type uuid.',

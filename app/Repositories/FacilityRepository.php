@@ -9,10 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 //LOCAL IMPORT
 use App\Interfaces\CrudInterface;
 use App\Interfaces\ActiveInterface;
-use App\Models\Room;
+use App\Models\Facility;
 use App\Exceptions\ResourceNotFoundException;
 
-class RoomRepository implements CrudInterface,ActiveInterface
+class FacilityRepository implements CrudInterface,ActiveInterface
 {
 
     /**
@@ -21,11 +21,11 @@ class RoomRepository implements CrudInterface,ActiveInterface
     public function viewAllByStatus($status)
     {
         try {
-            $rooms = Room::where('gn.rooms.active','=',$status)->get();
-            if ($rooms->isEmpty()){
-                throw new ResourceNotFoundException(trans('messages.room.exceptionNotFoundByStatus'));
+            $facilities = Facility::where('gn.facilities.active','=',$status)->get();
+            if ($facilities->isEmpty()){
+                throw new ResourceNotFoundException(trans('messages.facility.exceptionNotFoundByStatus'));
             }
-            return $rooms;
+            return $facilities;
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e) {
@@ -39,11 +39,11 @@ class RoomRepository implements CrudInterface,ActiveInterface
     public function viewAll()
     {
         try {
-            $rooms = Room::orderBy('name','desc')->get();
-            if ($rooms->isEmpty()){
-                throw new ResourceNotFoundException(trans('messages.room.exceptionNotFoundAll'));
+            $facilities = Facility::with('building')->orderBy('name','desc')->get();
+            if ($facilities->isEmpty()){
+                throw new ResourceNotFoundException(trans('messages.facility.exceptionNotFoundAll'));
             }
-            return $rooms;
+            return $facilities;
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e) {
@@ -57,11 +57,11 @@ class RoomRepository implements CrudInterface,ActiveInterface
     public function viewById($id)
     {
         try {
-            $room = Room::find($id);
-            if (!$room){
-                throw new ResourceNotFoundException(trans('messages.room.exceptionNotFoundById'));
+            $facility = Facility::find($id);
+            if (!$facility){
+                throw new ResourceNotFoundException(trans('messages.facility.exceptionNotFoundById'));
             }
-            return $room;
+            return $facility;
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e) {
@@ -75,10 +75,10 @@ class RoomRepository implements CrudInterface,ActiveInterface
     public function create(array $request): ?object
     {
         try {
-            $room = new Room();
-            $newRoom = $this->dataFormat($request,$room);
-            $newRoom->save();
-            return $newRoom;
+            $facility = new Facility();
+            $newFacility = $this->dataFormat($request,$facility);
+            $newFacility->save();
+            return $newFacility;
         } catch (Exception $e) {
             throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -90,13 +90,13 @@ class RoomRepository implements CrudInterface,ActiveInterface
     public function update($id, $request): object|null
     {
         try {
-            $room = $this->viewById($id);
-            if (!$room){
-                throw new ResourceNotFoundException(trans('messages.room.exceptionNotFoundById'));
+            $facility = $this->viewById($id);
+            if (!$facility){
+                throw new ResourceNotFoundException(trans('messages.facility.exceptionNotFoundById'));
             }
-            $newRoom = $this->dataFormat($request,$room);
-            $newRoom->update();
-            return $newRoom;
+            $newFacility = $this->dataFormat($request,$facility);
+            $newFacility->update();
+            return $newFacility;
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e) {
@@ -110,12 +110,12 @@ class RoomRepository implements CrudInterface,ActiveInterface
     public function delete($id): object|null
     {
         try {
-            $room = $this->viewById($id);
-            if (!$room){
-                throw new ResourceNotFoundException(trans('messages.room.exceptionNotFoundById'));
+            $facility = $this->viewById($id);
+            if (!$facility){
+                throw new ResourceNotFoundException(trans('messages.facility.exceptionNotFoundById'));
             }
-            $room->delete();
-            return $room;
+            $facility->delete();
+            return $facility;
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e) {
@@ -123,12 +123,12 @@ class RoomRepository implements CrudInterface,ActiveInterface
         }
     }
 
-    public function dataFormat(array $request, Room $room):object|null
+    public function dataFormat(array $request, Facility $facility):object|null
     {
-        $room->name = $request['name'];
-        $room->capacity = $request['capacity'];
-        $room->building_id = $request['building_id'];
-        $room->active = $request['active'];
-        return $room;
+        $facility->name = $request['name'];
+        $facility->capacity = $request['capacity'];
+        $facility->building_id = $request['building_id'];
+        $facility->active = $request['active'];
+        return $facility;
     }
 }

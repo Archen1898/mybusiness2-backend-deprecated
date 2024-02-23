@@ -15,20 +15,31 @@ return new class extends Migration
             $table->uuid('id')->primary()->unique();
             $table->string('day',10)->nullable();
             $table->string('hour',20)->nullable();
-            //defined relation with table room
-            $table->uuid('room_id')->nullable();
-            $table->foreign('room_id')
+
+            //defined relation with table facilities
+            $table->uuid('facility_id');
+            $table->foreign('facility_id')
                 ->references('id')
-                ->on('gn.rooms')
-                ->onDelete('set null')
-                ->onUpdate('no action');
+                ->on('gn.facilities')
+                ->onDelete('no action')
+                ->onUpdate('cascade');
+
             //defined relation with table section
-            $table->uuid('section_id')->nullable();
+            $table->uuid('section_id');
             $table->foreign('section_id')
                 ->references('id')
                 ->on('ac.sections')
                 ->onDelete('no action')
+                ->onUpdate('no action');
+
+            //defined relation with table user
+            $table->uuid('user_id');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('no action')
                 ->onUpdate('cascade');
+            $table->boolean('primary_instructor')->nullable();
         });
     }
 

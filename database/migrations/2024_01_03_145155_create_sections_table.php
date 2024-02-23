@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('ac.sections', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('status',30)->nullable();
+            $table->boolean('caps')->nullable();
+
             //defined relation with table term
             $table->uuid('term_id');
             $table->foreign('term_id')
                 ->references('id')
                 ->on('ac.terms')
                 ->onDelete('no action')
-                ->onUpdate('no action');
-            $table->boolean('caps')->nullable();
+                ->onUpdate('cascade');
+
             //defined relation with table course
             $table->uuid('course_id');
             $table->foreign('course_id')
@@ -29,21 +30,20 @@ return new class extends Migration
                 ->on('ac.courses')
                 ->onDelete('no action')
                 ->onUpdate('cascade');
-            //defined relation with table session
-            $table->uuid('session_id');
-            $table->foreign('session_id')
-                ->references('id')
-                ->on('ac.sessions')
-                ->onDelete('no action')
-                ->onUpdate('cascade');
+
+            $table->string('sec_code',2)->nullable();
+            $table->string('sec_number',2)->nullable();
+
             $table->integer('cap')->nullable();
+
             //defined relation with table instructor mode
             $table->uuid('instructor_mode_id');
             $table->foreign('instructor_mode_id')
                 ->references('id')
                 ->on('ac.instructor_modes')
                 ->onDelete('no action')
-                ->onUpdate('no action');
+                ->onUpdate('cascade');
+
             //defined relation with table campus
             $table->uuid('campus_id');
             $table->foreign('campus_id')
@@ -51,8 +51,10 @@ return new class extends Migration
                 ->on('gn.campuses')
                 ->onDelete('no action')
                 ->onUpdate('cascade');
-            $table->dateTime('starting_date');
-            $table->dateTime('ending_date');
+
+            $table->dateTime('starting_date')->nullable();
+            $table->dateTime('ending_date')->nullable();
+
             //defined relation with table program
             $table->uuid('program_id');
             $table->foreign('program_id')
@@ -60,7 +62,19 @@ return new class extends Migration
                 ->on('ac.programs')
                 ->onDelete('no action')
                 ->onUpdate('no action');
+
             $table->string('cohorts')->nullable();
+
+            //defined relation with table meeting patterns
+//            $table->uuid('meeting_patterns_id');
+//            $table->foreign('meeting_patterns_id')
+//                ->references('id')
+//                ->on('ac.meeting_patterns')
+//                ->onDelete('no action')
+//                ->onUpdate('no action');
+
+            $table->string('status',100)->nullable();
+
             $table->boolean('combined')->nullable();
             $table->string('comment')->nullable();
             $table->string('internal_note')->nullable();

@@ -78,7 +78,7 @@ class MeetingPatternController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="room id",
+     *         name="facility id",
      *         in="path",
      *         description="Uuid",
      *         required=true,
@@ -100,13 +100,13 @@ class MeetingPatternController extends Controller
      *
      * @param string $day
      * @param string $hour
-     * @param string $room_id
+     * @param string $facility_id
      * @return JsonResponse
      */
-    public function showMeetingPattern(string $day, string $hour,string $room_id): JsonResponse
+    public function showMeetingPattern(string $day, string $hour,string $facility_id): JsonResponse
     {
         try {
-            return $this->response(Response::HTTP_OK, 'Meeting pattern successfully fetched.', $this->meetingPatternRepository->viewByDayHourRoomId($day, $hour,$room_id), null);
+            return $this->response(Response::HTTP_OK, 'Meeting pattern successfully fetched.', $this->meetingPatternRepository->viewByDayHourRoomId($day, $hour,$facility_id), null);
         } catch (Exception $exception) {
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
@@ -132,14 +132,14 @@ class MeetingPatternController extends Controller
      *                          type="string"
      *                      ),
      *                      @OA\Property(
-     *                          property="room_id",
+     *                          property="facility_id",
      *                          type="uuid"
      *                      )
      *                 ),
      *                 example={
      *                      "day": "Monday",
      *                      "hour": "19:00",
-     *                      "room_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
+     *                      "facility_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
      *                }
      *             )
      *         )
@@ -196,7 +196,7 @@ class MeetingPatternController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="room id",
+     *         name="facility id",
      *         in="path",
      *         description="Uuid",
      *         required=true,
@@ -221,14 +221,14 @@ class MeetingPatternController extends Controller
      *                          type="string"
      *                      ),
      *                      @OA\Property(
-     *                          property="room_id",
+     *                          property="facility_id",
      *                          type="uuid"
      *                      )
      *                 ),
      *                 example={
      *                      "day": "Monday",
      *                      "hour": "19:00",
-     *                      "room_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
+     *                      "facility_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
      *                }
      *             )
      *         )
@@ -248,10 +248,10 @@ class MeetingPatternController extends Controller
      *          )
      *      )
      */
-    public function updateMeetingPattern(string $day, string $hour,string $room_id, MeetingPatternRequest $request): JsonResponse
+    public function updateMeetingPattern(string $day, string $hour,string $facility_id, MeetingPatternRequest $request): JsonResponse
     {
         try {
-            return $this->response(Response::HTTP_OK, 'Meeting patter successfully updated.', $this->meetingPatternRepository->update($day,$hour,$room_id,$request->all()), null);
+            return $this->response(Response::HTTP_OK, 'Meeting patter successfully updated.', $this->meetingPatternRepository->update($day,$hour,$facility_id,$request->all()), null);
         } catch (Exception $exception) {
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
@@ -286,7 +286,7 @@ class MeetingPatternController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="room id",
+     *         name="facility id",
      *         in="path",
      *         description="Uuid",
      *         required=true,
@@ -308,13 +308,13 @@ class MeetingPatternController extends Controller
      *
      * @param string $day
      * @param string $hour
-     * @param string $room_id
+     * @param string $facility_id
      * @return JsonResponse
      */
-    public function deleteMeetingPattern(string $day, string $hour,string $room_id): JsonResponse
+    public function deleteMeetingPattern(string $day, string $hour,string $facility_id): JsonResponse
     {
         try {
-            return $this->response(Response::HTTP_OK, 'Meeting patter successfully deleted.', $this->meetingPatternRepository->delete($day,$hour,$room_id),null);
+            return $this->response(Response::HTTP_OK, 'Meeting patter successfully deleted.', $this->meetingPatternRepository->delete($day,$hour,$facility_id),null);
         } catch (Exception $exception) {
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }

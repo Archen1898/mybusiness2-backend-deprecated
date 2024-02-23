@@ -34,8 +34,8 @@ class ProgramRequest extends ApiFormRequest
             'offering' => ['string','max:50','nullable'],
             'program_level_id' => ['uuid','max:36','nullable'],
             'program_grouping_id' => ['uuid','max:36','nullable'],
-            'term_effective' => ['required','string','max:10'],
-            'term_discontinue' => ['string','nullable','max:10'],
+            'term_effective_id' => ['required','uuid','max:36'],
+            'term_discontinue_id' => ['uuid','nullable','max:36'],
             'fte' => ['boolean','nullable'],
             'active' => ['boolean','nullable']
         ];
@@ -55,9 +55,9 @@ class ProgramRequest extends ApiFormRequest
             'program_level_id.max' => 'Field must have a maximum of 36 characters.',
             'program_grouping_id.uuid' => 'Field must be type uuid.',
             'program_grouping_id.max' => 'Field must have a maximum of 36 characters.',
-            'term_effective.required' => 'Required field.',
-            'term_effective.max' => 'Field must have a maximum of 10 characters.',
-            'term_discontinue.max' => 'Field must have a maximum of 10 characters.',
+            'term_effective_id.required' => 'Required field.',
+            'term_effective_id.max' => 'Field must have a maximum of 36 characters.',
+            'term_discontinue_id.max' => 'Field must have a maximum of 36 characters.',
             'fte.integer' => 'Field must be 0 or 1, true or false.',
             'active.boolean' => 'Field must be type 1 or 0.'
         ];

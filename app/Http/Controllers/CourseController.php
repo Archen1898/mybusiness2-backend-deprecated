@@ -130,6 +130,46 @@ class CourseController extends Controller
     }
 
     /**
+     * * Get course by value
+     * @OA\Get(
+     *     path="/api/course/find/{value}",
+     *     tags={"Course"},
+     *     operationId="findByValue",
+     *     @OA\Parameter(
+     *         name="value",
+     *         in="path",
+     *         description="String ID",
+     *         required=true,
+     *         explode=true,
+     *         @OA\Schema(
+     *             default="code,name, references number",
+     *             type="string",
+     *         )
+     *     ),
+     *     security={{"bearer":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid status value"
+     *     )
+     * )
+     *
+     * @param string $value
+     * @return JsonResponse
+     */
+    public function findByValue(string $value): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Course successfully fetched.', $this->courseRepository->findByCodeNameOrReference($value), null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
+
+    /**
      * Create course
      * @OA\Post (
      *     path="/api/course/add",
@@ -205,6 +245,7 @@ class CourseController extends Controller
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
     }
+
     /**
      * Update course
      * @OA\Put (

@@ -26,8 +26,8 @@ class Program extends Model
         'offering'=>'string',
         'program_level_id' => 'uuid',
         'program_grouping_id' => 'uuid',
-        'term_effective' => 'string',
-        'term_discontinue' => 'string',
+        'term_effective' => 'uuid',
+        'term_discontinue' => 'uuid',
         'fte' => 'boolean',
         'active'=>'boolean'
     ];
@@ -43,11 +43,11 @@ class Program extends Model
 
     public function termEffective(): BelongsTo
     {
-        return $this->belongsTo(Term::class,'term');
+        return $this->belongsTo(Term::class);
     }
     public function termDiscontinue(): BelongsTo
     {
-        return $this->BelongsTo(Term::class, 'term');
+        return $this->BelongsTo(Term::class);
     }
     public function course(): HasMany
     {

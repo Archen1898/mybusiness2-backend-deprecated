@@ -37,31 +37,17 @@ return new class extends Migration
                 ->onUpdate('cascade');
 
             //defined relation with table terms
-//            $table->integer('term_effective')
-//                ->constrained('ac.terms','term')
-//                ->on('ac.terms')
-//                ->onDelete('no action')
-//                ->onUpdate('cascade');
-
-            //defined relation with table terms
-            $table->string('term_effective',10)->nullable();
-            $table->foreign('term_effective')
-                ->references('term')
+            $table->uuid('term_effective_id')->nullable();
+            $table->foreign('term_effective_id')
+                ->references('id')
                 ->on('ac.terms')
-                ->onDelete('set null')
-                ->onUpdate('cascade');
+                ->onDelete('no action')
+                ->onUpdate('no action');
 
             //defined relation with table term
-//            $table->integer('term_discontinue')
-//                ->constrained('ac.terms','term')
-//                ->onDelete('no action')
-//                ->onUpdate('cascade')
-//                ->nullable();
-
-            //defined relation with table term
-            $table->string('term_discontinue',10)->nullable();
-            $table->foreign('term_discontinue')
-                ->references('term')
+            $table->uuid('term_discontinue_id')->nullable();
+            $table->foreign('term_discontinue_id')
+                ->references('id')
                 ->on('ac.terms')
                 ->onDelete('no action')
                 ->onUpdate('no action');

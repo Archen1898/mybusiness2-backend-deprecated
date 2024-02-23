@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 //LOCAL IMPORT
 use App\Traits\DbDefault;
 
-class RoomRequest extends ApiFormRequest
+class FacilityRequest extends ApiFormRequest
 {
     use DbDefault;
     /**
@@ -28,7 +28,7 @@ class RoomRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required','string','max:100',Rule::unique($this->getDbDefault('gn.rooms'))->ignore($this->id)],
+            'name' => ['required','string','max:100',Rule::unique($this->getDbDefault('gn.facilities'))->ignore($this->id)],
             'capacity' => ['integer','nullable'],
             'building_id' => ['uuid','max:36','nullable'],
             'active' => ['boolean','nullable']

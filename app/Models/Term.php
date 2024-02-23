@@ -19,7 +19,7 @@ class Term extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'term'=>'string',
+        'name'=>'string',
         'semester'=>'string',
         'year'=>'integer',
         'academic_year'=>'string',

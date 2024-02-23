@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gn.rooms', function (Blueprint $table) {
+        Schema::create('gn.facilities', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->string('name',200)->nullable();
             $table->integer('capacity')->nullable();
+            $table->string('address',255)->nullable();
+            $table->string('description',255)->nullable();
 
             //defined relation with table building
             $table->uuid('building_id')->nullable();
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gn.rooms');
+        Schema::dropIfExists('gn.facilities');
     }
 };

@@ -1369,6 +1369,41 @@
                 ]
             }
         },
+        "/api/course/find/{value}": {
+            "get": {
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get course by value",
+                "operationId": "findByValue",
+                "parameters": [
+                    {
+                        "name": "value",
+                        "in": "path",
+                        "description": "String ID",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "code,name, references number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/course/add": {
             "post": {
                 "tags": [
@@ -1873,6 +1908,288 @@
                 ]
             }
         },
+        "/api/facility/index": {
+            "get": {
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Get all facilities",
+                "operationId": "indexFacility",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/facility/status/{id}": {
+            "get": {
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Get facilities by status",
+                "operationId": "showFacilityByStatus",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "description": "Boolean ID",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "integer",
+                            "default": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/facility/{id}": {
+            "get": {
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Get facility by ID",
+                "operationId": "showFacility",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "String ID",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/facility/add": {
+            "post": {
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Create facility",
+                "operationId": "e29e4d1160f1e95b06d10274c45ed347",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "capacity": {
+                                                "type": "integer"
+                                            },
+                                            "building_id": {
+                                                "type": "uuid"
+                                            },
+                                            "active": {
+                                                "type": "boolean"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "AB302",
+                                    "capacity": "50",
+                                    "building_id": "e8356132-0e8c-4448-b547-6254094ddd3b",
+                                    "active": "1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/facility/update/{id}": {
+            "put": {
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Update facility",
+                "operationId": "4f0512856f8cc96aeacac112c412a544",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Uuid",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "uuid",
+                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "capacity": {
+                                                "type": "integer"
+                                            },
+                                            "building_id": {
+                                                "type": "uuid"
+                                            },
+                                            "active": {
+                                                "type": "boolean"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "AC302",
+                                    "capacity": "50",
+                                    "building_id": "e8356132-0e8c-4448-b547-6254094ddd3b",
+                                    "active": "1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/facility/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Delete facility by id",
+                "operationId": "deleteFacility",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Uuid",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "0C6A36BA-10E4-438F-BA86-0D5B68A2BB15"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/api/instructor_mode/index": {
             "get": {
                 "tags": [
@@ -2187,7 +2504,7 @@
                         }
                     },
                     {
-                        "name": "room id",
+                        "name": "facility id",
                         "in": "path",
                         "description": "Uuid",
                         "required": true,
@@ -2228,7 +2545,7 @@
                                             "hour": {
                                                 "type": "string"
                                             },
-                                            "room_id": {
+                                            "facility_id": {
                                                 "type": "uuid"
                                             }
                                         },
@@ -2239,7 +2556,7 @@
                                 "example": {
                                     "day": "Monday",
                                     "hour": "19:00",
-                                    "room_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
+                                    "facility_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
                                 }
                             }
                         }
@@ -2301,7 +2618,7 @@
                         }
                     },
                     {
-                        "name": "room id",
+                        "name": "facility id",
                         "in": "path",
                         "description": "Uuid",
                         "required": true,
@@ -2325,7 +2642,7 @@
                                             "hour": {
                                                 "type": "string"
                                             },
-                                            "room_id": {
+                                            "facility_id": {
                                                 "type": "uuid"
                                             }
                                         },
@@ -2336,7 +2653,7 @@
                                 "example": {
                                     "day": "Monday",
                                     "hour": "19:00",
-                                    "room_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
+                                    "facility_id": "e8356132-0e8c-4448-b547-6254094ddd3b"
                                 }
                             }
                         }
@@ -2398,7 +2715,7 @@
                         }
                     },
                     {
-                        "name": "room id",
+                        "name": "facility id",
                         "in": "path",
                         "description": "Uuid",
                         "required": true,
@@ -3848,41 +4165,6 @@
                 ]
             }
         },
-        "/api/role/permissions/{role}": {
-            "get": {
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "Get program grouping by ID",
-                "operationId": "getPermissionsByRoleName",
-                "parameters": [
-                    {
-                        "name": "role",
-                        "in": "path",
-                        "description": "Role name",
-                        "required": true,
-                        "explode": true,
-                        "schema": {
-                            "type": "string",
-                            "default": "Administrator"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid status value"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
         "/api/role_permission/index": {
             "get": {
                 "tags": [
@@ -4087,288 +4369,6 @@
                     },
                     "422": {
                         "description": "Validation error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/room/index": {
-            "get": {
-                "tags": [
-                    "Room"
-                ],
-                "summary": "Get all rooms",
-                "operationId": "indexRoom",
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid status value"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/room/status/{id}": {
-            "get": {
-                "tags": [
-                    "Room"
-                ],
-                "summary": "Get rooms by status",
-                "operationId": "showRoomByStatus",
-                "parameters": [
-                    {
-                        "name": "status",
-                        "in": "path",
-                        "description": "Boolean ID",
-                        "required": true,
-                        "explode": true,
-                        "schema": {
-                            "type": "integer",
-                            "default": "1"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid status value"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/room/{id}": {
-            "get": {
-                "tags": [
-                    "Room"
-                ],
-                "summary": "Get room by ID",
-                "operationId": "showRoom",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "String ID",
-                        "required": true,
-                        "explode": true,
-                        "schema": {
-                            "type": "string",
-                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid status value"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/room/add": {
-            "post": {
-                "tags": [
-                    "Room"
-                ],
-                "summary": "Create room",
-                "operationId": "6eb78c7919cdf62776fc33620524b079",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "": {
-                                        "properties": {
-                                            "name": {
-                                                "type": "string"
-                                            },
-                                            "capacity": {
-                                                "type": "integer"
-                                            },
-                                            "building_id": {
-                                                "type": "uuid"
-                                            },
-                                            "active": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object",
-                                "example": {
-                                    "name": "AB302",
-                                    "capacity": "50",
-                                    "building_id": "e8356132-0e8c-4448-b547-6254094ddd3b",
-                                    "active": "1"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "meta": {
-                                            "type": "object"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/room/update/{id}": {
-            "put": {
-                "tags": [
-                    "Room"
-                ],
-                "summary": "Update room",
-                "operationId": "c5b060bb381337a18c42c6b0234ea1a3",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Uuid",
-                        "required": true,
-                        "explode": true,
-                        "schema": {
-                            "type": "uuid",
-                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "": {
-                                        "properties": {
-                                            "name": {
-                                                "type": "string"
-                                            },
-                                            "capacity": {
-                                                "type": "integer"
-                                            },
-                                            "building_id": {
-                                                "type": "uuid"
-                                            },
-                                            "active": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object",
-                                "example": {
-                                    "name": "AC302",
-                                    "capacity": "50",
-                                    "building_id": "e8356132-0e8c-4448-b547-6254094ddd3b",
-                                    "active": "1"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "meta": {
-                                            "type": "object"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/room/delete/{id}": {
-            "delete": {
-                "tags": [
-                    "Room"
-                ],
-                "summary": "Delete room by id",
-                "operationId": "deleteRoom",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Uuid",
-                        "required": true,
-                        "explode": true,
-                        "schema": {
-                            "type": "string",
-                            "default": "0C6A36BA-10E4-438F-BA86-0D5B68A2BB15"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid status value"
                     }
                 },
                 "security": [

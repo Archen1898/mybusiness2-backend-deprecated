@@ -21,6 +21,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('panther_id')->unique();
             $table->string('avatar')->nullable();
+            $table->string('address')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('job_title')->nullable();
+            $table->string('work_phone')->nullable();
+            $table->string('location')->nullable();
             $table->boolean('instructor')->nullable();
             $table->boolean('student')->nullable();
             $table->timestamp('email_verified_at')->nullable();

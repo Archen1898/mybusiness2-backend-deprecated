@@ -12,10 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 //LOCAL IMPORT
 
-class Room extends Model
+class Facility extends Model
 {
     use HasFactory, Uuid;
-    protected $table = 'gn.rooms';
+    protected $table = 'gn.facilities';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
     public $timestamps = false;

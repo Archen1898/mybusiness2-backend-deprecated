@@ -42,16 +42,16 @@ class CourseRequest extends ApiFormRequest
     public function messages():array
     {
         return [
-            'code.required' => 'Required field.',
+            'code.required' => 'The course code is required.',
             'code.unique' => 'There is already a course with this code.',
             'code.max' => 'Field must have a maximum of 25 characters.',
-            'references_number.required' => 'Required field.',
-            'references_number.unique' => 'There is already a course with this code.',
+            'references_number.required' => 'Course reference number is required.',
+            'references_number.unique' => 'There is already a course with this number.',
             'references_number.max' => 'Field must have a maximum of 20 characters.',
             'name.max' => 'Field must have a maximum of 200 characters.',
-            'credit.required' => 'Required field.',
+            'credit.required' => 'The number of course credits is required.',
             'credit.numeric' => 'Field must be type number.',
-            'hour.required' => 'Required field.',
+            'hour.required' => 'The number of hours of the course is required.',
             'hour.numeric' => 'Field must be type number.',
             'description.max' => 'Field must have a maximum of 255 characters.',
             'department_id.uuid' => 'Field must be type uuid.',

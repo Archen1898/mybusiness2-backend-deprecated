@@ -36,10 +36,30 @@ class CourseRepository implements CrudInterface,ActiveInterface
     /**
      * @throws Exception
      */
+    public function findByCodeNameOrReference($searchTerm)
+    {
+        try {
+            $courses = Course::where('code', $searchTerm)
+                ->orWhere('name', 'like', '%' . $searchTerm . '%')
+                ->orWhere('references_number', $searchTerm)
+                ->first();
+            if (!$courses){
+                throw new ResourceNotFoundException(trans('messages.course.exceptionNotFoundByStatus'));
+            }
+            return $courses;
+        }catch (Exception $e){
+            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    /**
+     * @throws Exception
+     */
     public function viewAll()
     {
         try {
-            $courses = Course::orderBy('code','desc')->get();
+            $courses = Course::with('department', 'program')->orderBy('code','desc')->get();
             if ($courses->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.course.exceptionNotFoundAll'));
             }

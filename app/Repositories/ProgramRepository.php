@@ -38,7 +38,7 @@ class ProgramRepository implements CrudInterface,ActiveInterface
     public function viewAll()
     {
         try {
-            $programs = Program::orderBy('code','desc')->get();
+            $programs = Program::with('programLevel', 'programGrouping', 'termEffective', 'termDiscontinue')->get();
             if ($programs->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.program.exceptionNotFoundAll'));
             }
@@ -148,8 +148,8 @@ class ProgramRepository implements CrudInterface,ActiveInterface
         $program->offering = $request['offering'];
         $program->program_level_id = $request['program_level_id'];
         $program->program_grouping_id = $request['program_grouping_id'];
-        $program->term_effective = $request['term_effective'];
-        $program->term_discontinue = $request['term_discontinue'];
+        $program->term_effective_id = $request['term_effective_id'];
+        $program->term_discontinue_id = $request['term_discontinue_id'];
         $program->fte = $request['fte'];
         $program->active = $request['active'];
         return $program;

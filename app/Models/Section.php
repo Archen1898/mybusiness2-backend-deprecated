@@ -23,11 +23,11 @@ class Section extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'status'=>'string',
-        'term_id'=>'uuid',
         'caps'=>'boolean',
+        'term_id'=>'uuid',
         'course_id'=>'uuid',
-        'session_id'=>'uuid',
+        'sec_code'=>'string',
+        'sec_number'=>'string',
         'cap'=>'integer',
         'instructor_mode_id'=>'uuid',
         'campus_id'=>'uuid',
@@ -35,21 +35,30 @@ class Section extends Model
         'ending_date'=>'datetime',
         'program_id'=>'uuid',
         'cohorts'=>'string',
+        'status'=>'string',
         'combined'=>'boolean',
         'comment'=>'string',
         'internal_note'=>'string'
     ];
 
-//    public function instructorSections(): HasMany
-//    {
-//        return $this->HasMany(InstructorSection::class);
-//    }
+    public function term():BelongsTo
+    {
+        return $this->belongsTo(Term::class);
+    }
+    public function instructorMode():BelongsTo
+    {
+        return $this->belongsTo(InstructorMode::class);
+    }
+    public function campus():BelongsTo
+    {
+        return $this->belongsTo(Campus::class);
+    }
+    public function program():BelongsTo
+    {
+        return $this->belongsTo(Program::class);
+    }
     public function meetingPatterns(): HasMany
     {
         return $this->hasMany(MeetingPattern::class);
     }
-     public function term():BelongsTo
-     {
-         return $this->belongsTo(Term::class);
-     }
 }

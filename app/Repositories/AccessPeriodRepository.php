@@ -18,7 +18,7 @@ class AccessPeriodRepository implements CrudInterface
     public function viewAll()
     {
         try {
-            $accessPeriods = AccessPeriod::orderBy('term_id','desc')->get();
+            $accessPeriods = AccessPeriod::with('term')->orderBy('term_id','desc')->get();
             if ($accessPeriods->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.accessPeriod.exceptionNotFoundAll'));
             }

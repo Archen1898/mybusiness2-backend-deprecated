@@ -55,10 +55,10 @@ return [
     'building.exceptionNotFoundAll' => "We couldn't find registered buildings.",
     'building.exceptionNotFoundById' => "We couldn't find a building with that id.",
 
-    //messages errors model room
-    'room.exceptionNotFoundByStatus' => "We could not find rooms registered with that status.",
-    'room.exceptionNotFoundAll' => "We couldn't find registered rooms.",
-    'room.exceptionNotFoundById' => "We couldn't find a room with that id.",
+    //messages errors model facility
+    'facility.exceptionNotFoundByStatus' => "We could not find facilities registered with that status.",
+    'facility.exceptionNotFoundAll' => "We couldn't find registered facilities.",
+    'facility.exceptionNotFoundById' => "We couldn't find a facility with that id.",
 
 
     //messages errors model session
@@ -73,7 +73,7 @@ return [
 
     //messages errors model instructor modes
     'meetingPattern.exceptionNotFoundAll' => "We couldn't find registered meeting patterns.",
-    'meetingPattern.exceptionNotFoundByDayHourRoom' => "We couldn't find an meeting pattern with that day, hour and room.",
+    'meetingPattern.exceptionNotFoundByDayHourFacility' => "We couldn't find an meeting pattern with that day, hour and facility.",
 
     //messages errors model access period
     'accessPeriod.exceptionNotFoundAll' => "We couldn't find registered access periods.",
