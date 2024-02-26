@@ -24,7 +24,16 @@ class SectionRepository implements CrudInterface
     public function viewAll(): Model|Collection|null|array
     {
         try {
-            $sections = Section::with('meetingPatterns.instructors')->get();
+            $currentYear = date('Y');
+            $twoYearsAgo = $currentYear - 2;
+            $twoYearsLater = $currentYear + 2;
+
+            $sections = Section::whereHas('term', function ($query) use ($twoYearsAgo, $twoYearsLater) {
+                $query->where('year', '>=', $twoYearsAgo)
+                    ->where('year', '<=', $twoYearsLater);
+            })->with('term', 'course', 'instructorMode', 'campus', 'program', 'meetingPatterns')
+                ->get();
+
             if ($sections->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
             }
@@ -42,7 +51,7 @@ class SectionRepository implements CrudInterface
     public function viewById($id): Model|Collection|null
     {
         try {
-            $section = Section::with('meetingPatterns.instructors')->find($id);
+            $section = Section::with(['term', 'course', 'instructorMode', 'campus', 'program', 'meetingPatterns'])->find($id);
             if (!$section){
                 throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundById'));
             }
@@ -57,22 +66,50 @@ class SectionRepository implements CrudInterface
     /**
      * @throws Exception
      */
+    
     public function create(array $request): ?object
     {
         DB::beginTransaction();
         try {
+            // Find all existing sections with the same data, except sec_code and sec_number
+            $existingSections = Section::where('caps', $request['caps'])
+                ->where('term_id', $request['term_id'])
+                ->where('course_id', $request['course_id'])
+                ->where('cap', $request['cap'])
+                ->where('instructor_mode_id', $request['instructor_mode_id'])
+                ->where('campus_id', $request['campus_id'])
+                ->where('starting_date', $request['starting_date'])
+                ->where('ending_date', $request['ending_date'])
+                ->where('program_id', $request['program_id'])
+                ->where('cohorts', $request['cohorts'])
+                ->where('status', $request['status'])
+                ->where('combined', false)
+                ->get();
+
+            // Update the combined field to true for all sessions found
+            foreach ($existingSections as $existingSection) {
+                $existingSection->combined = true;
+                $existingSection->save();
+            }
+
+            // Create the new section
             $section = new Section();
-            $newSection = $this->dataFormatSection($request,$section);
+            $newSection = $this->dataFormatSection($request, $section);
+            $existingSections->count()>0? $newSection->combined = true: $newSection->combined = false;
             $newSection->save();
-            $this->updateMeetingInstructor($request,$newSection->id);
+
+            // Create the Meeting Patterns
+            $this->createMeetingPattern($request, $newSection->id);
+
             DB::commit();
             return $newSection;
         } catch (Exception $e) {
-            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
-        } finally {
             DB::rollback();
+            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     /**
      * @throws Exception
@@ -87,13 +124,8 @@ class SectionRepository implements CrudInterface
             }
             $newSection = $this->dataFormatSection($request,$section);
             $newSection->update();
-            $meetingPatterns = $section->meetingPatterns()->pluck('ac.meeting_patterns.id')->toArray();
-            foreach ($meetingPatterns as $meetingPatternId){
-                $meetingPattern = MeetingPattern::find($meetingPatternId);
-                $meetingPattern->instructors()->delete();
-            }
             $newSection->meetingPatterns()->delete();
-            $this->updateMeetingInstructor($request,$newSection->id);
+            $this->createMeetingPattern($request,$newSection->id);
             DB::commit();
             return $this->viewById($id);
         } catch (ResourceNotFoundException $e) {
@@ -142,39 +174,41 @@ class SectionRepository implements CrudInterface
     {
         DB::beginTransaction();
         try {
-            if (count($request['terms_olds']) != 3 | count($request['terms_news']) != 3){
-                throw new Exception("The number of terms must be 3");
-            }
-//            $sectionsTerm = Section::with('meetingPatterns.instructors')->orderBy('term', 'desc')->get();
-            foreach ($request['terms_olds'] as $termId){
-                //get all sections using term ids array
-                $sectionsTerm = Section::with('meetingPatterns.instructors')->where('term_id', $termId)->get();
-                foreach ($sectionsTerm as $index=>$section){
-                    //duplicate section
-                    $newSection = $section->replicate();
-                    $newSection->term_id = $request['terms_news'][$index];
-                    $newSection->save();
+            // Counter for duplicate sections
+            $numberDuplicateSections = 0;
 
-                    //duplicate meeting pattern associate to section
-                    foreach ($section->meetingPatterns as $meetingPattern){
-                        $newMeetingPattern = $meetingPattern->replicate();
-                        $newMeetingPattern->section_id = $newSection->id;
-                        $newMeetingPattern->save();
-                        //duplicate instructor associate to meeting pattern
-                        foreach ($newMeetingPattern->instructors as $instructor){
-                            $newInstructor = $instructor->replicate();
-                            $newInstructor->save();
-                        }
+            $idTermOrigin = 'id_del_termino_origen';
+            $idTermDestination = 'id_del_termino_destino';
+
+            $instructor = true;
+            $user_id = 'id';
+
+            // Get all sections of the origin term
+            $sectionsOrigin = Section::where('term_id', $idTermOrigin)->with('meetingPatterns')->get();
+
+            // Duplicate and save the sections in the destination term
+            foreach ($sectionsOrigin as $section) {
+                $newSection = $section->replicate(); // Clone the section
+                $newSection->term_id = $idTermDestination; // Assign the destination term
+                $newSection->save(); // Save the new section
+
+                // Duplicate and save the section meeting patterns
+                foreach ($section->meetingPatterns as $meetingPattern) {
+                    $nuevoMeetingPattern = $meetingPattern->replicate(); // Clone the meeting pattern
+                    $nuevoMeetingPattern->section_id = $newSection->id; // Assign the  new section
+
+                    // Change user_id if instructor=true and user_id is present
+                    if ($instructor && $user_id) {
+                        $nuevoMeetingPattern->user_id = $user_id;
                     }
-//                    foreach ($section->instructorSections as $instructor){
-//                        $newInstructor = $instructor->replicate();
-//                        $newInstructor->section_id = $newSection->id;
-//                        $newInstructor->save();
-//                    }
+                    $nuevoMeetingPattern->save(); // Save the new meeting pattern
                 }
+                //Increment duplicate section counter
+                $numberDuplicateSections++;
             }
-            return "Good";
+
             DB::commit();
+            return $numberDuplicateSections;
         } catch (Exception $exception) {
             DB::rollback();
             throw new Exception($exception->getMessage());
@@ -182,11 +216,11 @@ class SectionRepository implements CrudInterface
     }
     public function dataFormatSection(array $request, Section $section):object|null
     {
-        $section->status = $request['status'];
-        $section->term_id = $request['term_id'];
         $section->caps = $request['caps'];
+        $section->term_id = $request['term_id'];
         $section->course_id = $request['course_id'];
-        $section->session_id = $request['session_id'];
+        $section->sec_code = $request['sec_code'];
+        $section->sec_number = $request['sec_number'];
         $section->cap = $request['cap'];
         $section->instructor_mode_id = $request['instructor_mode_id'];
         $section->campus_id = $request['campus_id'];
@@ -194,6 +228,7 @@ class SectionRepository implements CrudInterface
         $section->ending_date = $request['ending_date'];
         $section->program_id = $request['program_id'];
         $section->cohorts = $request['cohorts'];
+        $section->status = $request['status'];
         $section->combined = $request['combined'];
         $section->comment = $request['comment'];
         $section->internal_note = $request['internal_note'];
@@ -205,9 +240,12 @@ class SectionRepository implements CrudInterface
         foreach ($request['meeting_patterns'] as $planning){
             $meetingPattern = new MeetingPattern();
             $meetingPattern->day = $planning['day'];
-            $meetingPattern->hour = $planning['hour'];
+            $meetingPattern->start_time = $planning['start_time'];
+            $meetingPattern->end_time = $planning['end_time'];
+            $meetingPattern->facility_id = $planning['facility_id'];
             $meetingPattern->section_id = $sectionId;
-            $meetingPattern->room_id = $planning['room_id'];
+            $meetingPattern->user_id = $planning['user_id'];
+            $meetingPattern->primary_instructor = $planning['primary_instructor'];
             $array[] = $meetingPattern;
         }
         return $array;
@@ -227,26 +265,13 @@ class SectionRepository implements CrudInterface
     /**
      * @throws Exception
      */
-    public function updateMeetingInstructor($request, $id): void
+    public function createMeetingPattern($request, $id): void
     {
         try {
-        $arrayInstructorIds = [];
-        $arrayMeetingPatternIds = [];
             $meetingPatterns = $this->dataFormatMeetingPattern($request,$id);
             foreach ($meetingPatterns as $item){
                 $item->save();
-                $arrayMeetingPatternIds[] = $item->id;
             }
-            $instructors = $this->dataFormatInstructor($request);
-            foreach ($instructors as $item){
-                $item->save();
-                $arrayInstructorIds[] = $item->id;
-            }
-            foreach ($arrayMeetingPatternIds as $meetingPatternId){
-                $meetingPattern = MeetingPattern::find($meetingPatternId);
-                $meetingPattern->instructors()->attach($arrayInstructorIds);
-            }
-
         }catch (Exception $exception){
             throw new Exception($exception->getMessage());
         }

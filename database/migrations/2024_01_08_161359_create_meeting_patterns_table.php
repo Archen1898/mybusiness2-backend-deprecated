@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('ac.meeting_patterns', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->string('day',10)->nullable();
-            $table->string('hour',20)->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
 
             //defined relation with table facilities
             $table->uuid('facility_id');

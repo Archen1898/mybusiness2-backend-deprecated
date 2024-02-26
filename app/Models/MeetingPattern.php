@@ -6,10 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 //LOCAL IMPORT
 use App\Traits\Uuid;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class MeetingPattern extends Model
 {
@@ -21,16 +22,23 @@ class MeetingPattern extends Model
 
     protected $fillable = [
         'day'=>'string',
-        'hour'=>'string',
+        'start_time'=>'string',
+        'end_time'=>'string',
+        'facility_id'=>'uuid',
         'section_id'=>'uuid',
-        'room_id'=>'uuid'
+        'user_id'=>'uuid',
+        'primary_instructor'=>'boolean',
     ];
+    public function facility(): HasMany
+    {
+        return $this->hasMany(Facility::class);
+    }
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }
-    public function instructors():BelongsToMany
+    public function user():HasMany
     {
-        return $this->belongsToMany(Instructor::class, 'ac.instructor_meeting_patterns', 'meeting_pattern_id', 'instructor_id');
+        return $this->hasMany(User::class);
     }
 }

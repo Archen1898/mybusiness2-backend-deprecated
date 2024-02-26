@@ -45,9 +45,9 @@ class Section extends Model
     {
         return $this->belongsTo(Term::class);
     }
-    public function instructorMode():BelongsTo
+    public function course():BelongsTo
     {
-        return $this->belongsTo(InstructorMode::class);
+        return $this->belongsTo(Course::class);
     }
     public function campus():BelongsTo
     {
@@ -60,5 +60,9 @@ class Section extends Model
     public function meetingPatterns(): HasMany
     {
         return $this->hasMany(MeetingPattern::class);
+    }
+    public function instructorMode(): BelongsTo
+    {
+        return $this->belongsTo(InstructorMode::class);
     }
 }
