@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Request;
+use Carbon\Carbon;
 
 //LOCAL IMPORT
 use App\Models\Section;
@@ -79,56 +79,65 @@ class SectionRepository implements CrudInterface
      */
     public function create(array $request): object|array|null
     {
-        $combinedState = false;
+        try {
+            $combinedState = false;
 
-        // Step 1: Get the number of meeting patterns in the request
-        $requestMeetingPatterns = $request['meeting_patterns'];
+            // Step 1: Get the number of meeting patterns in the request
+            $requestMeetingPatterns = $request['meeting_patterns'];
 
-        // Step 2: Find duplicate sections that have the same meeting_patterns
-        $duplicatedSections = Section::with('meetingPatterns')
-            ->where('caps', $request['caps'])
-            ->where('term_id', $request['term_id'])
-            ->where('course_id', $request['course_id'])
-            ->where('sec_code', $request['sec_code'])
-            ->where('sec_number', $request['sec_number'])
-            ->where('cap', $request['cap'])
-            ->where('instructor_mode_id', $request['instructor_mode_id'])
-            ->where('campus_id', $request['campus_id'])
-            ->where('starting_date', $request['starting_date'])
-            ->where('ending_date', $request['ending_date'])
-            ->where('program_id', $request['program_id'])
-            ->where('cohorts', $request['cohorts'])
-            ->where('status', $request['status'])
-            ->get();
+            // Step 2: Find duplicate sections that have the same meeting_patterns
+            $duplicatedSections = Section::with('meetingPatterns')
+                ->where('caps', $request['caps'])
+                ->where('term_id', $request['term_id'])
+                ->where('course_id', $request['course_id'])
+                ->where('sec_code', $request['sec_code'])
+                ->where('sec_number', $request['sec_number'])
+                ->where('cap', $request['cap'])
+                ->where('instructor_mode_id', $request['instructor_mode_id'])
+                ->where('campus_id', $request['campus_id'])
+                ->where('starting_date', $request['starting_date'])
+                ->where('ending_date', $request['ending_date'])
+                ->where('program_id', $request['program_id'])
+                ->where('cohorts', $request['cohorts'])
+                ->where('status', $request['status'])
+                ->get();
 
-        // Step 2: Update duplicate sections
-        foreach ($duplicatedSections as $section) {
-            foreach ($section->meetingPatterns as $patternIndex => $pattern) {
-                foreach ($requestMeetingPatterns as $requestPatternIndex => $requestPattern) {
-                    if ($this->comparePatterns($pattern, $requestPattern) && count($section->meetingPatterns) === count($requestMeetingPatterns)) {
-                        $section->combined = true;
-                        $combinedState = true;
-                        $section->save();
+            if ($duplicatedSections->count()>0){
+                // Step 2: Update duplicate sections
+                foreach ($duplicatedSections as $section) {
+                    foreach ($section->meetingPatterns as $patternIndex => $pattern) {
+                        foreach ($requestMeetingPatterns as $requestPatternIndex => $requestPattern) {
+                            if ($this->comparePatterns($pattern, $requestPattern) && count($section->meetingPatterns) === count($requestMeetingPatterns)) {
+                                $section->combined = true;
+                                $combinedState = true;
+                                $section->save();
+                            }
+                        }
                     }
                 }
             }
+
+            // Step 3: Create a new section
+            $section = new Section();
+            $newSection = $this->dataFormatSection($request, $section);
+            $user = Auth::user();
+            $newSection->created_by = $user->user_name;
+            $newSection->combined = $combinedState;
+
+            // Step 4: Save the new section
+            $newSection->save();
+
+            // Step 5: Assign the mating pattern to the new section
+            $this->createMeetingPattern($request, $newSection->id);
+
+            // Step 6: Return the new created section
+            return $newSection;
+
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            throw new Exception(trans('messages.exception'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        // Step 3: Create a new section
-        $section = new Section();
-        $newSection = $this->dataFormatSection($request, $section);
-        $user = Auth::user();
-        $newSection->created_by = $user->user_name;
-        $newSection->combined = $combinedState;
-
-        // Step 4: Save the new section
-        $newSection->save();
-
-        // Step 5: Assign the mating pattern to the new section
-        $this->createMeetingPattern($request, $newSection->id);
-
-        // Step 6: Return the new created section
-        return $newSection;
     }
 
     /**
@@ -136,69 +145,80 @@ class SectionRepository implements CrudInterface
      */
     public function update($id, $request): object|null
     {
-        // Step 1: Search the section by its ID
-        $section = Section::with('meetingPatterns')->find($id);
-        $isDifferent = true;
+        try {
+            $isDifferent = true;
 
-        // Step 2: Compare the values of the request with the values of the section to update
-        if(((int)$section->caps===1? true: false) === $request['caps'] &&
-            $section->term_id === $request['term_id'] &&
-            $section->course_id === $request['course_id'] &&
-            $section->sec_code === $request['sec_code'] &&
-            $section->sec_number === $request['sec_number'] &&
-            $section->cap === strval($request['cap']) &&
-            $section->instructor_mode_id === $request['instructor_mode_id'] &&
-            $section->campus_id === $request['campus_id'] &&
-            $section->starting_date === $request['starting_date'] &&
-            $section->ending_date === $request['ending_date'] &&
-            $section->program_id === $request['program_id'] &&
-            $section->cohorts === $request['cohorts'] &&
-            $section->status === $request['status']
-        ){
-            foreach ($section->meetingPatterns as $patternIndex => $pattern) {
-                foreach ($request['meeting_patterns'] as $requestPatternIndex => $requestPattern) {
-                    if ($this->comparePatterns($pattern, $requestPattern) && count($section->meetingPatterns) === count($request['meeting_patterns'])) {
-                        $isDifferent=false;
+            // Step 1: Search the section by its ID
+            $section = Section::with('meetingPatterns')->find($id);
+            if (!$section) {
+                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundById'));
+            }
+
+            // Step 2: Compare the values of the request with the values of the section to update
+            if(((int)$section->caps===1? true: false) === $request['caps'] &&
+                $section->term_id === $request['term_id'] &&
+                $section->course_id === $request['course_id'] &&
+                $section->sec_code === $request['sec_code'] &&
+                $section->sec_number === $request['sec_number'] &&
+                $section->cap === strval($request['cap']) &&
+                $section->instructor_mode_id === $request['instructor_mode_id'] &&
+                $section->campus_id === $request['campus_id'] &&
+                $section->starting_date === $request['starting_date'] &&
+                $section->ending_date === $request['ending_date'] &&
+                $section->program_id === $request['program_id'] &&
+                $section->cohorts === $request['cohorts'] &&
+                $section->status === $request['status']
+            ){
+                foreach ($section->meetingPatterns as $patternIndex => $pattern) {
+                    foreach ($request['meeting_patterns'] as $requestPatternIndex => $requestPattern) {
+                        if ($this->comparePatterns($pattern, $requestPattern) && count($section->meetingPatterns) === count($request['meeting_patterns'])) {
+                            $isDifferent=false;
+                        }
                     }
                 }
             }
-        }
 
-        // Step 3: If the request is equal to the values of the section to be edited, the same section is returned
-        if(!$isDifferent){
-            return $section;
-        } else {
+            // Step 3: If the request is equal to the values of the section to be edited, the same section is returned
+            if(!$isDifferent){
+                return $section;
+            } else {
 
-            // Step 4: If the request is different, duplicate sections must be searched using the section we found by id
-            $duplicatedSections = $this->getDuplicateSections($section, $id);
+                // Step 4: If the request is different, duplicate sections must be searched using the section we found by id
+                $duplicatedSections = $this->getDuplicateSections($section, $id);
 
-            // Step 5: If there is only one section equal to the one we found by id, the combined value must be changed to false
-            if ($duplicatedSections->count()===1){
-                $user = Auth::user();
-                $duplicatedSections->first()->updated_by = $user->user_name;
-                $duplicatedSections->first()->combined=false;
-                $duplicatedSections->first()->save();
+                // Step 5: If there is only one section equal to the one we found by id, the combined value must be changed to false
+                if ($duplicatedSections->count()===1){
+                    $user = Auth::user();
+                    $duplicatedSections->first()->updated_by = $user->user_name;
+                    $duplicatedSections->first()->combined=false;
+                    $duplicatedSections->first()->save();
+                }
+
+                // Step 6: We update the section found by the id with the new values from the request
+                $updatedSection = $this->dataFormatSection($request, $section);
+
+                // Step 7: We search again to see if there is any section equal to the one we are going to update
+                $duplicatedSections = $this->getDuplicateSections($updatedSection, $id);
+
+                // Step 8: If we find at least one section (it will always be 1), we change the value of combined to true for the duplicate section and the updated section
+                if ($duplicatedSections->count()>0 && count($duplicatedSections->first()->meetingPatterns) === count($request['meeting_patterns'])){
+                    $user = Auth::user();
+                    $duplicatedSections->first()->updated_by = $user->user_name;
+                    $duplicatedSections->first()->combined=true;
+                    $duplicatedSections->first()->save();
+                    $updatedSection->combined=true;
+                    $updatedSection->save();
+                    $updatedSection->meetingPatterns()->delete();
+                    $this->createMeetingPattern($request,$updatedSection->id);
+                }
             }
-
-            // Step 6: We update the section found by the id with the new values from the request
-            $updatedSection = $this->dataFormatSection($request, $section);
-
-            // Step 7: We search again to see if there is any section equal to the one we are going to update
-            $duplicatedSections = $this->getDuplicateSections($updatedSection, $id);
-
-            // Step 8: If we find at least one section (it will always be 1), we change the value of combined to true for the duplicate section and the updated section
-            if ($duplicatedSections->count()>0 && count($duplicatedSections->first()->meetingPatterns) === count($request['meeting_patterns'])){
-                $user = Auth::user();
-                $duplicatedSections->first()->updated_by = $user->user_name;
-                $duplicatedSections->first()->combined=true;
-                $duplicatedSections->first()->save();
-                $updatedSection->combined=true;
-                $updatedSection->save();
-                $updatedSection->meetingPatterns()->delete();
-                $this->createMeetingPattern($request,$updatedSection->id);
-            }
+            return $updatedSection;
+            
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            throw new Exception(trans('messages.exception'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return $updatedSection;
     }
 
     /**
@@ -316,4 +336,10 @@ class SectionRepository implements CrudInterface
             ->where('id', '!=', $id)
             ->get();
     }
+
+    public function verifyAccessDates(Section $section): bool
+    {
+
+    }
+
 }
