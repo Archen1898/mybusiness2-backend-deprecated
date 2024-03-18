@@ -735,7 +735,7 @@
                 ]
             }
         },
-        "/api/campus/status/{id}": {
+        "/api/campus/status/{status}": {
             "get": {
                 "tags": [
                     "Campus"
@@ -750,7 +750,7 @@
                         "required": true,
                         "explode": true,
                         "schema": {
-                            "type": "integer",
+                            "type": "boolean",
                             "default": "1"
                         }
                     }
@@ -5174,18 +5174,53 @@
                 "tags": [
                     "User"
                 ],
-                "summary": "Get user with roles and permission by user id",
+                "summary": "Get course by ID",
                 "operationId": "showUser",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Uuid ID",
+                        "description": "String ID",
                         "required": true,
                         "explode": true,
                         "schema": {
-                            "type": "uuid",
-                            "default": "1268A938-37DE-48C6-99C2-99840575104C"
+                            "type": "string",
+                            "default": "D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/user/role/{name}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get users by role",
+                "operationId": "indexUserByRole",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Role name",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "instructor"
                         }
                     }
                 ],

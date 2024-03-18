@@ -29,16 +29,17 @@ class MeetingPattern extends Model
         'user_id'=>'uuid',
         'primary_instructor'=>'boolean',
     ];
-    public function facility(): HasMany
+
+    public function facility(): BelongsTo
     {
-        return $this->hasMany(Facility::class);
+        return $this->belongsTo(Facility::class);
     }
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }
-    public function user():HasMany
+    public function user():BelongsTo
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class);
     }
 }

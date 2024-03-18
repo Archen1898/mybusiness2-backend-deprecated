@@ -52,7 +52,7 @@ class CampusController extends Controller
     /**
      * * Get campuses by status
      * @OA\Get(
-     *     path="/api/campus/status/{id}",
+     *     path="/api/campus/status/{status}",
      *     tags={"Campus"},
      *     operationId="showCampusByStatus",
      *     @OA\Parameter(
@@ -63,7 +63,7 @@ class CampusController extends Controller
      *         explode=true,
      *         @OA\Schema(
      *             default="1",
-     *             type="integer",
+     *             type="boolean",
      *         )
      *     ),
      *     security={{"bearer":{}}},

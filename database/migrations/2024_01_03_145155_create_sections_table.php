@@ -64,20 +64,14 @@ return new class extends Migration
                 ->onUpdate('no action');
 
             $table->string('cohorts')->nullable();
-
-            //defined relation with table meeting patterns
-//            $table->uuid('meeting_patterns_id');
-//            $table->foreign('meeting_patterns_id')
-//                ->references('id')
-//                ->on('ac.meeting_patterns')
-//                ->onDelete('no action')
-//                ->onUpdate('no action');
-
             $table->string('status',100)->nullable();
-
             $table->boolean('combined')->nullable();
             $table->string('comment')->nullable();
             $table->string('internal_note')->nullable();
+            $table->string('references_number_panther',10)->nullable();
+            $table->string('created_by',100)->nullable();
+            $table->string('updated_by',100)->nullable();
+            $table->timestamps();
         });
     }
 

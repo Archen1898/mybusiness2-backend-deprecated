@@ -26,6 +26,7 @@ class Department extends Model
         'college_id'=>'uuid',
         'active'=>'boolean'
     ];
+
     public function college():BelongsTo
     {
         return $this->belongsTo(College::class);

@@ -51,7 +51,7 @@ class UserController extends Controller
     }
 
     /**
-     * * Get user with roles and permission by user id
+     * * Get course by ID
      * @OA\Get(
      *     path="/api/user/{id}",
      *     tags={"User"},
@@ -59,12 +59,12 @@ class UserController extends Controller
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Uuid ID",
+     *         description="String ID",
      *         required=true,
      *         explode=true,
      *         @OA\Schema(
-     *             default="1268A938-37DE-48C6-99C2-99840575104C",
-     *             type="uuid"
+     *             default="D9B7E73F-9E5B-4884-AF72-1FE5934A6E3A",
+     *             type="string",
      *         )
      *     ),
      *     security={{"bearer":{}}},
@@ -87,6 +87,46 @@ class UserController extends Controller
             return $this->response(Response::HTTP_OK, 'User successfully fetched.', $this->userRepository->viewById($id), null);
         } catch (Exception $exception) {
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
+
+    /**
+     * * Get users by role
+     * @OA\Get(
+     *     path="/api/user/role/{name}",
+     *     tags={"User"},
+     *     operationId="indexUserByRole",
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="path",
+     *         description="Role name",
+     *         required=true,
+     *         explode=true,
+     *         @OA\Schema(
+     *             default="instructor",
+     *             type="string",
+     *         )
+     *     ),
+     *     security={{"bearer":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid status value"
+     *     )
+     * )
+     *
+     * @param string $name
+     * @return JsonResponse
+     */
+    public function indexUserByRole(string $name): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Instructors successfully fetched.', $this->userRepository->viewUsersByRole($name), null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST,  $exception->getMessage(), [], $exception->getMessage());
         }
     }
 
@@ -361,7 +401,7 @@ class UserController extends Controller
      *
      * *
      * @param string $id
-     * @param TermRequest $request
+     * @param UserRequest $request
      * @return JsonResponse
      */
     public function updateUser(string $id, UserRequest $request): JsonResponse

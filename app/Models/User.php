@@ -68,8 +68,8 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class);
     }
 
-    public function instructorMeetingPattern():BelongsToMany
+    public function meetingPattern():BelongsTo
     {
-        return $this->belongsToMany(Instructor::class);
+        return $this->belongsTo(MeetingPattern::class);
     }
 }

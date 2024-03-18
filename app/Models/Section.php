@@ -1,16 +1,15 @@
 <?php
 
 namespace App\Models;
+
 //GLOBAL IMPORT
-use App\Models\delete\InstructorSection;
-use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 //LOCAL IMPORT
+use App\Traits\Uuid;
 
 
 class Section extends Model
@@ -20,7 +19,7 @@ class Section extends Model
     protected $table = 'ac.sections';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'caps'=>'boolean',
@@ -64,5 +63,9 @@ class Section extends Model
     public function instructorMode(): BelongsTo
     {
         return $this->belongsTo(InstructorMode::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

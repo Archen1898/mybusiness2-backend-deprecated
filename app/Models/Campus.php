@@ -23,7 +23,6 @@ class Campus extends Model
         'name'=>'string',
         'active'=>'boolean'
     ];
-
     public function building(): HasMany
     {
         return $this->hasMany(Building::class);

@@ -25,7 +25,6 @@ class Building extends Model
         'campus_id'=>'uuid',
         'active'=>'boolean'
     ];
-
     public function campus(): BelongsTo
     {
         return $this->belongsTo(Campus::class);

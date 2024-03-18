@@ -32,8 +32,8 @@ class Facility extends Model
         return $this->belongsTo(Building::class);
     }
 
-    public function meetingPatterns():BelongsTo
+    public function meetingPatterns():HasMany
     {
-        return $this->belongsTo(MeetingPattern::class);
+        return $this->hasMany(MeetingPattern::class);
     }
 }

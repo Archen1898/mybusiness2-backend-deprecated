@@ -22,4 +22,6 @@ class InstructorMode extends Model
         'name'=>'string',
         'active'=>'boolean'
     ];
+
+
 }

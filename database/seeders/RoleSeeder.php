@@ -163,6 +163,7 @@ class RoleSeeder extends Seeder
         $role1->givePermissionTo(['name'=>'Create a section']);
         $role1->givePermissionTo(['name'=>'Update a section']);
         $role1->givePermissionTo(['name'=>'Delete a section']);
+        $role1->givePermissionTo(['name'=>'Search instructor user']);
 
         $role2 = Role::create(['name'=>'Instructor']);
         $role3 = Role::create(['name'=>'Secretary']);

@@ -44,7 +44,6 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('register','register')->name('register');
 });
 
-
 Route::middleware('auth:api')->group(function () {
 //    Route::get('profile',[AuthController::class,'profile']);
 //    Route::post('logout',[AuthController::class,'logout']);
@@ -68,6 +67,15 @@ Route::middleware('auth:api')->group(function () {
 //        Route::get('role/permissions/{role}','getPermissionsByRoleName')->middleware('permission:List of roles');
     });
 
+    Route::controller(UserController::class)->group(function(){
+        Route::get('user/index','indexUser')->middleware('permission:List of users');
+        Route::get('user/{id}', 'showUser')->middleware('permission:Search user by ID');
+        Route::post('user/add', 'createUser')->middleware('permission:Create an user');
+        Route::put('user/update/{id}', 'updateUser')->middleware('permission:Update an user');
+        Route::delete('user/delete/{id}', 'deleteUser')->middleware('permission:Delete an user');
+        Route::get('user/role/{name}', 'indexUserByRole')->middleware('permission:Search instructor user');
+    });
+
     Route::controller(RoleHasPermissionController::class)->group(function(){
         Route::get('role_permission/index','indexRoleHasPermission')->middleware('permission:List of roles and permissions');
         Route::get('role_permission/{id}','showPermissionsByRoleId')->middleware('permission:List of permissions by role ID');
@@ -75,13 +83,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('role_permission/delete/{id}','deletePermissionToRoleByRoleId')->middleware('permission:Delete permission to a role');
     });
 
-    Route::controller(UserController::class)->group(function(){
-        Route::get('user/index','indexUser')->middleware('permission:List of users');
-        Route::get('user/{id}', 'showUser')->middleware('permission:Search user by ID');
-        Route::post('user/add', 'createUser')->middleware('permission:Create an user');
-        Route::put('user/update/{id}', 'updateUser')->middleware('permission:Update an user');
-        Route::delete('user/delete/{id}', 'deleteUser')->middleware('permission:Delete an user');
-    });
+
 
     Route::controller(UserHasRoleController::class)->group(function(){
         Route::get('user_role/index','indexUserHasRole')->middleware('permission:List of user and roles');

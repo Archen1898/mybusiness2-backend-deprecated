@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 return new class extends Migration
 {
     /**
@@ -14,8 +15,8 @@ return new class extends Migration
         Schema::create('ac.meeting_patterns', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->string('day',10)->nullable();
-            $table->time('start_time')->nullable();
-            $table->time('end_time')->nullable();
+            $table->time('start_time')->nullable()->format('H:i');
+            $table->time('end_time')->nullable()->format('H:i');
 
             //defined relation with table facilities
             $table->uuid('facility_id');

@@ -3,6 +3,7 @@
 namespace  App\Repositories;
 
 //GLOBAL IMPORT
+use App\Models\Role;
 use Carbon\Carbon;
 use Exception;
 use ErrorException;
@@ -57,6 +58,39 @@ class UserRepository
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e){
             throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function viewUsersByRole($role)
+    {
+        try {
+            $rol = Role::where('name', $role)->first();
+            if (!$rol) {
+                throw new ResourceNotFoundException(trans('messages.role.exceptionNotFoundByName'));
+            }
+            $usersQuery = User::query();
+            if ($role === 'Instructor') {
+                $usersQuery->where('instructor', true);
+            } elseif ($role === 'Student') {
+                $usersQuery->where('student', true);
+            } else {
+                $usersQuery->whereHas('roles', function ($query) use ($role) {
+                    $query->where('name', $role);
+                });
+            }
+            $users = $usersQuery->get();
+            if ($users->isEmpty()) {
+                throw new ResourceNotFoundException(trans('messages.user.exceptionNotFoundByRole'));
+            }
+            return $users;
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
+        } catch (Exception $e){
+            throw new Exception($e->getMessage());
+//            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 

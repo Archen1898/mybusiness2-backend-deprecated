@@ -57,7 +57,7 @@ class AuthRepository
     {
         $data = Auth::guard()->user();
         if (!$data){
-            throw new Exception("Sorry, something is wrong. Please try again.", response::HTTP_INTERNAL_SERVER_ERROR);
+            throw new Exception("asasas", response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return $data;
     }

@@ -160,6 +160,7 @@ class PermissionSeeder extends Seeder
         Permission::create(['name'=>'Create a section']);
         Permission::create(['name'=>'Update a section']);
         Permission::create(['name'=>'Delete a section']);
+        Permission::create(['name'=>'Search instructor user']);
 
     }
 }

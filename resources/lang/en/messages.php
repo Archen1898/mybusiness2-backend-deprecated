@@ -8,6 +8,7 @@ return [
     //messages errors model user
     'user.exceptionNotFoundAll' => "We couldn't find registered users.",
     'user.exceptionNotFoundById' => "We couldn't find a user with that id.",
+    'user.exceptionNotFoundByRole' => "We couldn't find a user with that role.",
 
     //messages errors model campus
     'campus.exceptionNotFoundByStatus' => "We could not find campuses registered with that status.",
@@ -92,6 +93,7 @@ return [
     //messages errors model role
     'role.exceptionNotFoundAll' => "We couldn't find registered roles.",
     'role.exceptionNotFoundById' => "We couldn't find an role with that id.",
+    'role.exceptionNotFoundByName'=>"We couldn't find an role with that name.",
 
     //messages errors model role has permissions
     'roleHasPermission.exceptionNotFoundAll' => "We couldn't find roles with registered permissions.",
