@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 //LOCAL IMPORT
+use App\Models\Term;
 use App\Models\Section;
 use App\Interfaces\CrudInterface;
 use App\Models\MeetingPattern;
 use App\Exceptions\ResourceNotFoundException;
+use App\Http\Requests\SectionDuplicateRequest;
 class SectionRepository implements CrudInterface
 {
     /**
@@ -80,6 +82,7 @@ class SectionRepository implements CrudInterface
     public function create(array $request): object|array|null
     {
         try {
+           $value = $this->verifyAccessDates($request['term_id']);
             $combinedState = false;
 
             // Step 1: Get the number of meeting patterns in the request
@@ -213,11 +216,65 @@ class SectionRepository implements CrudInterface
                 }
             }
             return $updatedSection;
-            
+
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
             throw new Exception(trans('messages.exception'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function duplicateSections(SectionDuplicateRequest $request): int
+    {
+        try {
+            DB::beginTransaction();
+
+            // Step 1: Declare the duplicate section counter
+            $numberDuplicateSections = 0;
+
+            // Step 2: Get all sections of the origin term
+            $sectionsOrigin = Section::with('meetingPatterns')
+                ->where('term_id', $request['term_id_origin'])
+                ->get();
+
+            if ($sectionsOrigin->isEmpty()){
+                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+            }
+
+            // Step 3: Duplicate and save the sections in the destination term
+            foreach ($sectionsOrigin as $section) {
+                $newSection = $section->replicate(); // Clone the section
+                $newSection->term_id = $request['term_id_destination']; // Assign the destination term
+                $newSection->save(); // Save the new section
+
+                // Duplicate and save the section meeting patterns
+                foreach ($section->meetingPatterns as $meetingPattern) {
+                    $nuevoMeetingPattern = $meetingPattern->replicate(); // Clone the meeting pattern
+                    $nuevoMeetingPattern->section_id = $newSection->id; // Assign the new section
+
+                    // Change user_id if instructor=true and user_id is present
+                    if ($request['instructor'] && $request['user_id']) {
+                        $nuevoMeetingPattern->user_id = $request['user_id'];
+                    }
+                    $nuevoMeetingPattern->save(); // Save the new meeting pattern
+                }
+                //Increment duplicate section counter
+                $numberDuplicateSections++;
+            }
+            DB::commit();
+
+            // Step 4: Return the number of duplicate sections
+            return $numberDuplicateSections;
+
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
+        } catch (Exception $e) {
+            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
+        } finally {
+            DB::rollback();
         }
     }
 
@@ -337,9 +394,45 @@ class SectionRepository implements CrudInterface
             ->get();
     }
 
-    public function verifyAccessDates(Section $section): bool
+    /**
+     * @throws ResourceNotFoundException
+     * @throws Exception
+     */
+
+    // TODO: I must review this method with Samantha because I don't know how she controls access by dates.
+    public function verifyAccessDates(string $termId): bool
     {
+        try {
+            // Step 1: Search the term by its ID
+            $term = Term::with('accessPeriod')->find($termId);
+            $hasAccess = false;
+            if (!$term) {
+                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundById'));
+            }
 
+            // Step 2: Get the current date
+            $now = Carbon::now();
+
+            // Step 3: Compare whether the current date is greater than or equal to the administration start date and the department start date
+            $adminBeginningDate = Carbon::parse($term->accessPeriod->admin_beginning_date);
+            $departBeginningDate = Carbon::parse($term->accessPeriod->depart_beginning_date);
+
+            if ($now->greaterThanOrEqualTo($adminBeginningDate) && $now->greaterThanOrEqualTo($departBeginningDate)) {
+
+                // Step 4: // Compare whether the current date is less than or equal to the administration end date and the department end date
+                $adminEndingDate = Carbon::parse($term->accessPeriod->admin_ending_date);
+                $departEndingDate = Carbon::parse($term->accessPeriod->depart_ending_date);
+
+                if ($now->lessThanOrEqualTo($adminEndingDate) && $now->lessThanOrEqualTo($departEndingDate)) {
+                    // La fecha actual está dentro del período de acceso
+                    $hasAccess= true;
+                }
+            }
+            return $hasAccess;
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            throw new Exception(trans('messages.exception'), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
-
 }

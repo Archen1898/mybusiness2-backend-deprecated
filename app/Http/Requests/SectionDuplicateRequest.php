@@ -26,21 +26,24 @@ class SectionDuplicateRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'terms_olds' => ['required','array','min:3','max:3',new UuidArray],
-            'terms_news' => ['required','array','min:3','max:3',new UuidArray]
+            'term_id_origin' => ['required', 'uuid', 'max:36'],
+            'term_id_destination' => ['required', 'uuid', 'max:36'],
+            'user_id' => ['uuid', 'max:36','nullable'],
+            'instructor' => ['boolean', 'nullable']
         ];
     }
     public function messages():array
     {
         return [
-            'terms_olds.required' => 'Required field.',
-            'terms_olds.array' => 'Field must be type array.',
-            'terms_olds.max' => 'Field must have a maximum of 3.',
-            'terms_olds.min' => 'Field must have a minimum of 3.',
-            'terms_news.required' => 'Required field.',
-            'terms_news.array' => 'Field must be type array.',
-            'terms_news.max' => 'Field must have a maximum of 3.',
-            'terms_news.min' => 'Field must have a minimum of 3.',
+            'term_id_origin.required' => 'Required field.',
+            'term_id_origin.uuid' => 'Field must be type uuid.',
+            'term_id_origin.max' => 'Field must have a maximum of 36.',
+            'term_id_destination.required' => 'Required field.',
+            'term_id_destination.uuid' => 'Field must be type uuid.',
+            'term_id_destination.max' => 'Field must have a maximum of 36.',
+            'user_id.uuid' => 'Field must be type uuid.',
+            'user_id.max' => 'Field must have a maximum of 36.',
+            'instructor.boolean' => 'Field must be type true or false.',
         ];
     }
 }
