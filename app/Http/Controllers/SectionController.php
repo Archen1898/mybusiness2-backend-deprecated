@@ -114,10 +114,28 @@ class SectionController extends Controller
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
     }
-    public function duplicateSections(SectionDuplicateRequest $terms): JsonResponse
+    public function duplicateSections(SectionDuplicateRequest $request): JsonResponse
     {
         try {
-            return $this->response(Response::HTTP_OK, 'Duplication successfully.', $this->sectionRepository->duplicateSections($terms->all()),null);
+            return $this->response(Response::HTTP_OK, 'Duplication successfully.', $this->sectionRepository->duplicateSections($request),null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
+
+    public function quantitySection(): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Number of sections per term successfully fetched.', $this->sectionRepository->termInstructorQuantity(),null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
+
+    public function getTermsInfo(): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Info successfully fetched.', $this->sectionRepository->getTermsInfo(),null);
         } catch (Exception $exception) {
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }

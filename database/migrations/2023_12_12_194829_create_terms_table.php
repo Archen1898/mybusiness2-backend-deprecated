@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ac.terms', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('name',10)->unique();
+            $table->integer('number')->unique();
             $table->string('semester',10);
             $table->integer('year');
             $table->string('academic_year',9)->nullable();

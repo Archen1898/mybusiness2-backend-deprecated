@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 //LOCAL IMPORT
 use App\Models\Term;
@@ -27,20 +28,25 @@ class SectionRepository implements CrudInterface
     public function viewAll(): Model|Collection|null|array
     {
         try {
-            $currentYear = date('Y');
-            $twoYearsAgo = $currentYear - 2;
-            $twoYearsLater = $currentYear + 2;
 
-            $sections = Section::whereHas('term', function ($query) use ($twoYearsAgo, $twoYearsLater) {
-                $query->where('year', '>=', $twoYearsAgo)
-                    ->where('year', '<=', $twoYearsLater);
-            })->with('term', 'course.department', 'instructorMode', 'campus', 'program','meetingPatterns.facility','meetingPatterns.user')
+            // Step 1: Get the last 5 terms stored in the database
+            $latestTerms = Term::orderByDesc('number')->take(5)->pluck('id');
+            if ($latestTerms->isEmpty()){
+                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+            }
+
+            // Step 2: Get the sections associated with the last 5 terms
+            $sections = Section::whereIn('term_id', $latestTerms)
+                ->with('term', 'course.department', 'instructorMode', 'campus', 'program','meetingPatterns.facility','meetingPatterns.user')
                 ->get();
 
             if ($sections->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
             }
+
+            // Step 3: Return the sections
             return $sections;
+
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
         } catch (Exception $e) {
@@ -66,41 +72,39 @@ class SectionRepository implements CrudInterface
         }
     }
 
-
     private function comparePatterns($pattern1, $pattern2): bool
     {
         return $pattern1['day'] === $pattern2['day'] &&
             date('H:i', strtotime($pattern1['start_time'])) === $pattern2['start_time'] &&
             date('H:i', strtotime($pattern1['end_time'])) === $pattern2['end_time'] &&
-            $pattern1['facility_id'] === $pattern2['facility_id'] &&
-            $pattern1['user_id'] === $pattern2['user_id'] &&
+            strtolower($pattern1['facility_id']) === strtolower($pattern2['facility_id']) &&
+            strtolower($pattern1['user_id']) === strtolower($pattern2['user_id']) &&
             $pattern1['primary_instructor'] === strval($pattern2['primary_instructor']);
     }
+
     /**
      * @throws Exception
      */
     public function create(array $request): object|array|null
     {
         try {
-           $value = $this->verifyAccessDates($request['term_id']);
-            $combinedState = false;
-
             // Step 1: Get the number of meeting patterns in the request
             $requestMeetingPatterns = $request['meeting_patterns'];
+            $combinedState = false;
 
             // Step 2: Find duplicate sections that have the same meeting_patterns
             $duplicatedSections = Section::with('meetingPatterns')
                 ->where('caps', $request['caps'])
-                ->where('term_id', $request['term_id'])
-                ->where('course_id', $request['course_id'])
+                ->where('term_id', strtolower($request['term_id']))
+                ->where('course_id', strtolower($request['course_id']))
                 ->where('sec_code', $request['sec_code'])
                 ->where('sec_number', $request['sec_number'])
                 ->where('cap', $request['cap'])
-                ->where('instructor_mode_id', $request['instructor_mode_id'])
-                ->where('campus_id', $request['campus_id'])
+                ->where('instructor_mode_id', strtolower($request['instructor_mode_id']))
+                ->where('campus_id', strtolower($request['campus_id']))
                 ->where('starting_date', $request['starting_date'])
                 ->where('ending_date', $request['ending_date'])
-                ->where('program_id', $request['program_id'])
+                ->where('program_id', strtolower($request['program_id']))
                 ->where('cohorts', $request['cohorts'])
                 ->where('status', $request['status'])
                 ->get();
@@ -135,7 +139,6 @@ class SectionRepository implements CrudInterface
 
             // Step 6: Return the new created section
             return $newSection;
-
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
@@ -203,18 +206,22 @@ class SectionRepository implements CrudInterface
                 // Step 7: We search again to see if there is any section equal to the one we are going to update
                 $duplicatedSections = $this->getDuplicateSections($updatedSection, $id);
 
-                // Step 8: If we find at least one section (it will always be 1), we change the value of combined to true for the duplicate section and the updated section
+                // Step 8: If we find at least one section (it will always be 1), we change the value of combined to true for the duplicate section
                 if ($duplicatedSections->count()>0 && count($duplicatedSections->first()->meetingPatterns) === count($request['meeting_patterns'])){
                     $user = Auth::user();
                     $duplicatedSections->first()->updated_by = $user->user_name;
                     $duplicatedSections->first()->combined=true;
                     $duplicatedSections->first()->save();
                     $updatedSection->combined=true;
-                    $updatedSection->save();
-                    $updatedSection->meetingPatterns()->delete();
-                    $this->createMeetingPattern($request,$updatedSection->id);
                 }
             }
+
+            // Step 9: I update the meeting patterns and save the changes to the database
+            $updatedSection->meetingPatterns()->delete();
+            $this->createMeetingPattern($request,$updatedSection->id);
+            $updatedSection->save();
+
+            // Step 10: Return the updated section
             return $updatedSection;
 
         } catch (ResourceNotFoundException $e) {
@@ -307,6 +314,7 @@ class SectionRepository implements CrudInterface
             DB::rollback();
         }
     }
+
     public function dataFormatSection(array $request, Section $section):object|null
     {
         $section->caps = $request['caps'];
@@ -326,6 +334,7 @@ class SectionRepository implements CrudInterface
         $section->internal_note = $request['internal_note'];
         return $section;
     }
+
     public function dataFormatMeetingPattern(array $request, string $sectionId): array
     {
         $array = [];
@@ -342,6 +351,7 @@ class SectionRepository implements CrudInterface
         }
         return $array;
     }
+
     /**
      * @throws Exception
      */
@@ -398,7 +408,6 @@ class SectionRepository implements CrudInterface
      * @throws ResourceNotFoundException
      * @throws Exception
      */
-
     // TODO: I must review this method with Samantha because I don't know how she controls access by dates.
     public function verifyAccessDates(string $termId): bool
     {
@@ -434,5 +443,145 @@ class SectionRepository implements CrudInterface
         } catch (Exception $e) {
             throw new Exception(trans('messages.exception'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * @throws ResourceNotFoundException
+     * @throws Exception
+     */
+    public function termInstructorQuantity(): array
+    {
+        try {
+            // Step 1: Get the last 5 terms stored in the database
+            $latestTerms = Term::with('sections.meetingPatterns.user')->orderByDesc('number')->take(6)->get();
+            if ($latestTerms->isEmpty()){
+                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+            }
+
+            // Step 2: Initialize arrays to store the results
+            $totals = [];
+            $semesters = [];
+
+            // Step 3: For each term, obtain the associated sections and calculate the number of instructors
+            foreach ($latestTerms as $term) {
+                $semester = Str::upper(Str::substr($term->semester, 0, 2)) . $term->year;
+                $instructorCount = 0;
+
+                foreach ($term->sections as $section) {
+                    // Step 4 Add the number of unique instructors across all sections of the term
+                    $instructorCount += $section->meetingPatterns->pluck('user')->unique('id')->count();
+                }
+
+                // Step 5: Add data to arrays
+                $semesters[] = $semester;
+                $totals[] = $instructorCount;
+            }
+
+            // Step 6: Return arrays
+            return [
+                "series" => [
+                    [
+                        "name" => "Instructors",
+                        "data" => $totals
+                    ]
+                ],
+                "categories" => $semesters
+            ];
+
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function getTermsInfo(): array
+    {
+        //Step 1: Get the current date
+        $currentDate = Carbon::now();
+
+        //Step 2: Get the last 6 terms ordered by semester and year
+        $latestTerms = Term::orderByDesc('number')->take(6)->get();
+        $data = [];
+
+        foreach ($latestTerms as $key => $term) {
+            //Step 3: Calculate the name of the term
+            $termName = ucfirst($term->semester) . $term->year;
+            $termStartDate = date('m/d/y', strtotime($term->begin_dt));
+            $termEndDate = date('m/d/y', strtotime($term->end_dt));
+
+            //Step 4: Count the number of sections in the term
+            $sectionsCount = $term->sections()->count();
+
+            //Step 5: Get all sections of the term
+            $sections = $term->sections()->with('meetingPatterns')->get();
+
+            //Step 6: Initialize a set to store unique instructors
+            $uniqueInstructors = collect();
+
+            //Step 7: Initialize an array to count the states
+            $statesCount = [];
+
+            foreach ($sections as $section) {
+                // Obtener las reuniones asociadas a la sección
+                $meetingPatterns = $section->meetingPatterns;
+
+                // Incrementar el contador de estados
+                $sectionState = $section->status;
+                if (array_key_exists($sectionState, $statesCount)) {
+                    $statesCount[$sectionState]++;
+                } else {
+                    $statesCount[$sectionState] = 1;
+                }
+
+                foreach ($meetingPatterns as $meetingPattern) {
+                    // Agregar el ID del instructor al conjunto de instructores únicos
+                    $uniqueInstructors->add($meetingPattern->user_id);
+                }
+            }
+            //Step 8:Eliminate duplicate ids
+            $collectionNoRepeats = $uniqueInstructors->unique();
+
+            //Step 9: Count the number of unique instructors
+            $instructorsCount = $collectionNoRepeats->count();
+
+            //Step 10: Get the corresponding previous term
+            $previousTerm = $latestTerms->get($key + 1);
+
+            $sectionsIncrease = 0;
+            $increase = false;
+
+            //Step 11: Inside the foreach loop to buy the sections quantities
+            if ($term->sections->count() > 0) {
+                //Step 12: Get the data from the previous term of the same type (same season and previous year)
+                $previousTerm = Term::where('semester', $term->semester)
+                    ->where('year', $term->year - 1)
+                    ->first();
+
+                if ($previousTerm) {
+                    $previousSectionsCount = $previousTerm->sections()->count();
+                    $sectionsIncrease = max(($sectionsCount-$previousSectionsCount),0);
+                    $increase = $sectionsCount-$previousSectionsCount>0;
+                }
+            }
+
+            //Step 13: Create the array for the current term
+            $termData = [
+                'name' => $termName,
+                'startDate' => $termStartDate,
+                'endDate' => $termEndDate,
+                'sections' => $sectionsCount,
+                'instructors' => $instructorsCount,
+                'states' => $statesCount,
+                'quantity' => [
+                    'value' => $sectionsIncrease,
+                    'increase' => $increase
+                ]
+            ];
+
+            //Step 14: Add the term array to the main array
+            $data[] = $termData;
+        }
+        return $data;
     }
 }

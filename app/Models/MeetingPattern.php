@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 //LOCAL IMPORT
 use App\Traits\Uuid;
+use App\Models\User;
 
 class MeetingPattern extends Model
 {

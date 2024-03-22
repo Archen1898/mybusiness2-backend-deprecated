@@ -19,7 +19,7 @@ class Term extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name'=>'string',
+        'number'=>'integer',
         'semester'=>'string',
         'year'=>'integer',
         'academic_year'=>'string',
@@ -54,7 +54,7 @@ class Term extends Model
     {
         return $this->hasMany(AccessPeriod::class);
     }
-    public function section():HasMany
+    public function sections():HasMany
     {
         return $this->hasMany(Section::class);
     }

@@ -21,7 +21,7 @@ class TermRepository implements CrudInterface,ActiveInterface {
     public function viewAll()
     {
         try {
-            $terms = Term::orderBy('name', 'desc')->get();
+            $terms = Term::orderBy('number', 'desc')->get();
             if ($terms->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.term.exceptionNotFoundAll'));
             }
@@ -125,7 +125,7 @@ class TermRepository implements CrudInterface,ActiveInterface {
 
     public function dataForTerm(array $request, Term $term):object|null
     {
-        $term->name = $request['name'];
+        $term->number = $request['number'];
         $term->semester = $request['semester'];
         $term->year = $request['year'];
         $term->academic_year = $request['academic_year'];
