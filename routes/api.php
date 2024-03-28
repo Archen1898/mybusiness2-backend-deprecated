@@ -112,6 +112,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::controller(CollegeController::class)->group(function(){
         Route::get('college/index','indexCollege')->middleware('permission:List of colleges');
+        Route::get('college/asdfg','getSection')->middleware('permission:List of colleges');
         Route::get('college/{id}', 'showCollege')->middleware('permission:Search college by ID');
         Route::get('college/status/{status}', 'showCollegeByStatus')->middleware('permission:Search colleges by status');
         Route::post('college/add', 'addCollege')->middleware('permission:Create a college');
@@ -150,6 +151,8 @@ Route::middleware('auth:api')->group(function () {
     //start schedule module
     Route::controller(TermController::class)->group(function(){
         Route::get('term/index','indexTerm')->middleware('permission:List of terms');
+        Route::get('term/number_instructors_term','getNumberInstructorsPerTerm')->middleware('permission:List of terms');
+        Route::get('term/term_details','getTermDetails')->middleware('permission:List of terms');
         Route::get('term/{id}', 'showTerm')->middleware('permission:Search term by ID');
         Route::get('term/status/{status}', 'showTermByStatus')->middleware('permission:Search terms by status');
         Route::post('term/add', 'addTerm')->middleware('permission:Create a term');
@@ -233,7 +236,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('section/index','indexSection')->middleware('permission:List of sections');
         Route::get('section/{id}', 'showSection')->middleware('permission:Search section by ID');
         Route::get('section/graph/quantity','quantitySection')->middleware('permission:List of sections');
-        Route::get('section/info/sections','getTermsInfo')->middleware('permission:List of sections');
+//        Route::get('section/info/sections','getTermsInfo')->middleware('permission:List of sections');
         Route::post('section/add', 'addSection')->middleware('permission:Search sections by status');
         Route::post('section/duplicate', 'duplicateSections')->middleware('permission:Duplicate a section');
         Route::put('section/update/{id}', 'updateSection')->middleware('permission:Create a section');

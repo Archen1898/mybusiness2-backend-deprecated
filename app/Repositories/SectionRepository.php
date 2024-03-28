@@ -445,143 +445,165 @@ class SectionRepository implements CrudInterface
         }
     }
 
-    /**
-     * @throws ResourceNotFoundException
-     * @throws Exception
-     */
-    public function termInstructorQuantity(): array
-    {
-        try {
-            // Step 1: Get the last 5 terms stored in the database
-            $latestTerms = Term::with('sections.meetingPatterns.user')->orderByDesc('number')->take(6)->get();
-            if ($latestTerms->isEmpty()){
-                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
-            }
-
-            // Step 2: Initialize arrays to store the results
-            $totals = [];
-            $semesters = [];
-
-            // Step 3: For each term, obtain the associated sections and calculate the number of instructors
-            foreach ($latestTerms as $term) {
-                $semester = Str::upper(Str::substr($term->semester, 0, 2)) . $term->year;
-                $instructorCount = 0;
-
-                foreach ($term->sections as $section) {
-                    // Step 4 Add the number of unique instructors across all sections of the term
-                    $instructorCount += $section->meetingPatterns->pluck('user')->unique('id')->count();
-                }
-
-                // Step 5: Add data to arrays
-                $semesters[] = $semester;
-                $totals[] = $instructorCount;
-            }
-
-            // Step 6: Return arrays
-            return [
-                "series" => [
-                    [
-                        "name" => "Instructors",
-                        "data" => $totals
-                    ]
-                ],
-                "categories" => $semesters
-            ];
-
-        } catch (ResourceNotFoundException $e) {
-            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
-        }
-    }
-
-    public function getTermsInfo(): array
-    {
-        //Step 1: Get the current date
-        $currentDate = Carbon::now();
-
-        //Step 2: Get the last 6 terms ordered by semester and year
-        $latestTerms = Term::orderByDesc('number')->take(6)->get();
-        $data = [];
-
-        foreach ($latestTerms as $key => $term) {
-            //Step 3: Calculate the name of the term
-            $termName = ucfirst($term->semester) . $term->year;
-            $termStartDate = date('m/d/y', strtotime($term->begin_dt));
-            $termEndDate = date('m/d/y', strtotime($term->end_dt));
-
-            //Step 4: Count the number of sections in the term
-            $sectionsCount = $term->sections()->count();
-
-            //Step 5: Get all sections of the term
-            $sections = $term->sections()->with('meetingPatterns')->get();
-
-            //Step 6: Initialize a set to store unique instructors
-            $uniqueInstructors = collect();
-
-            //Step 7: Initialize an array to count the states
-            $statesCount = [];
-
-            foreach ($sections as $section) {
-                // Obtener las reuniones asociadas a la sección
-                $meetingPatterns = $section->meetingPatterns;
-
-                // Incrementar el contador de estados
-                $sectionState = $section->status;
-                if (array_key_exists($sectionState, $statesCount)) {
-                    $statesCount[$sectionState]++;
-                } else {
-                    $statesCount[$sectionState] = 1;
-                }
-
-                foreach ($meetingPatterns as $meetingPattern) {
-                    // Agregar el ID del instructor al conjunto de instructores únicos
-                    $uniqueInstructors->add($meetingPattern->user_id);
-                }
-            }
-            //Step 8:Eliminate duplicate ids
-            $collectionNoRepeats = $uniqueInstructors->unique();
-
-            //Step 9: Count the number of unique instructors
-            $instructorsCount = $collectionNoRepeats->count();
-
-            //Step 10: Get the corresponding previous term
-            $previousTerm = $latestTerms->get($key + 1);
-
-            $sectionsIncrease = 0;
-            $increase = false;
-
-            //Step 11: Inside the foreach loop to buy the sections quantities
-            if ($term->sections->count() > 0) {
-                //Step 12: Get the data from the previous term of the same type (same season and previous year)
-                $previousTerm = Term::where('semester', $term->semester)
-                    ->where('year', $term->year - 1)
-                    ->first();
-
-                if ($previousTerm) {
-                    $previousSectionsCount = $previousTerm->sections()->count();
-                    $sectionsIncrease = max(($sectionsCount-$previousSectionsCount),0);
-                    $increase = $sectionsCount-$previousSectionsCount>0;
-                }
-            }
-
-            //Step 13: Create the array for the current term
-            $termData = [
-                'name' => $termName,
-                'startDate' => $termStartDate,
-                'endDate' => $termEndDate,
-                'sections' => $sectionsCount,
-                'instructors' => $instructorsCount,
-                'states' => $statesCount,
-                'quantity' => [
-                    'value' => $sectionsIncrease,
-                    'increase' => $increase
-                ]
-            ];
-
-            //Step 14: Add the term array to the main array
-            $data[] = $termData;
-        }
-        return $data;
-    }
+//    /**
+//     * @throws ResourceNotFoundException
+//     * @throws Exception
+//     */
+//    public function termInstructorQuantity(): array
+//    {
+//        try {
+//            // Step 1: Get the last 5 terms stored in the database
+//            $latestTerms = Term::with('sections.meetingPatterns.user')->orderByDesc('number')->take(6)->get();
+//            if ($latestTerms->isEmpty()){
+//                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+//            }
+//
+//            // Step 2: Initialize arrays to store the results
+//            $totals = [];
+//            $semesters = [];
+//
+//            // Step 3: For each term, obtain the associated sections and calculate the number of instructors
+//            foreach ($latestTerms as $term) {
+//                $semester = Str::upper(Str::substr($term->semester, 0, 2)) . $term->year;
+//                $instructorCount = 0;
+//
+//                foreach ($term->sections as $section) {
+//                    // Step 4 Add the number of unique instructors across all sections of the term
+//                    $instructorCount += $section->meetingPatterns->pluck('user')->unique('id')->count();
+//                }
+//
+//                // Step 5: Add data to arrays
+//                $semesters[] = $semester;
+//                $totals[] = $instructorCount;
+//            }
+//
+//            // Step 6: Return arrays
+//            return [
+//                "series" => [
+//                    [
+//                        "name" => "Instructors",
+//                        "data" => $totals
+//                    ]
+//                ],
+//                "categories" => $semesters
+//            ];
+//
+//        } catch (ResourceNotFoundException $e) {
+//            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+//        } catch (Exception $e) {
+//            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//
+//    /**
+//     * @throws ResourceNotFoundException
+//     * @throws Exception
+//     */
+//    public function getTermsInfo(): array
+//    {
+//        try {
+//            //Step 1: Get the current date
+//            $currentDate = Carbon::now();
+//            $data = [];
+//
+//            //Step 2: Get the last 6 terms ordered by semester and year
+//            $latestTerms = Term::orderByDesc('number')->take(6)->get();
+//            if ($latestTerms->isEmpty()){
+//                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+//            }
+//
+//            foreach ($latestTerms as $key => $term) {
+//                //Step 3: Calculate the name of the term
+//                $termName = ucfirst($term->semester) . $term->year;
+//                $termStartDate = date('m/d/y', strtotime($term->begin_dt));
+//                $termEndDate = date('m/d/y', strtotime($term->end_dt));
+//
+//                //Step 4: Count the number of sections in the term
+//                $sectionsCount = $term->sections()->count();
+//
+//                //Step 5: Get all sections of the term
+//                $sections = $term->sections()->with('meetingPatterns')->get();
+//
+//                //Step 6: Initialize a set to store unique instructors
+//                $uniqueInstructors = collect();
+//
+//                //Step 7: Initialize an array to count the states
+//                $statesCount = [];
+//
+//                foreach ($sections as $section) {
+//                    //Step 8: Get the meetings associated with the section
+//                    $meetingPatterns = $section->meetingPatterns;
+//
+//                    //Step 9: Increment the status counter
+//                    $sectionState = $section->status;
+//                    if (array_key_exists($sectionState, $statesCount)) {
+//                        $statesCount[$sectionState]++;
+//                    } else {
+//                        $statesCount[$sectionState] = 1;
+//                    }
+//
+//                    foreach ($meetingPatterns as $meetingPattern) {
+//                        //Step 10: Add the instructor ID to the set of unique instructors
+//                        $uniqueInstructors->add($meetingPattern->user_id);
+//                    }
+//                }
+//                //Step 11:Eliminate duplicate ids
+//                $collectionNoRepeats = $uniqueInstructors->unique();
+//
+//                //Step 12: Count the number of unique instructors
+//                $instructorsCount = $collectionNoRepeats->count();
+//
+//                //Step 13: Get the corresponding previous term
+//                $previousTerm = $latestTerms->get($key + 1);
+//
+//                $sectionsIncrease = 0;
+//                $increase = false;
+//
+//                //Step 14: Inside the foreach loop to buy the sections quantities
+//                if ($term->sections->count() > 0) {
+//                    //Step 15: Get the data from the previous term of the same type (same season and previous year)
+//                    $previousTerm = Term::where('semester', $term->semester)
+//                        ->where('year', $term->year - 1)
+//                        ->first();
+//
+//                    if ($previousTerm) {
+//                        $previousSectionsCount = $previousTerm->sections()->count();
+//                        $sectionsIncrease = max(($sectionsCount-$previousSectionsCount),0);
+//                        $increase = $sectionsCount-$previousSectionsCount>0;
+//                    }
+//                }
+//
+//                //Step 16: Calculate days elapsed from begin_dt to today and days between begin_dt and end_dt
+//                $beginDate = Carbon::parse($term->begin_dt);
+//                $daysPassed = $beginDate->diffInDays($currentDate);
+//                $endDate = Carbon::parse($term->end_dt);
+//                $daysBetweenStartAndEnd = $beginDate->diffInDays($endDate);
+//
+//                //Step 17: Create the array for the current term
+//                $termData = [
+//                    'name' => $termName,
+//                    'startDate' => $termStartDate,
+//                    'endDate' => $termEndDate,
+//                    'daysPassed'=> $daysPassed,
+//                    'totalDays' => $daysBetweenStartAndEnd,
+//                    'current' => $currentDate->greaterThanOrEqualTo($term->begin_dt) && $currentDate->lessThanOrEqualTo($term->end_dt),
+//                    'sections' => $sectionsCount,
+//                    'instructors' => $instructorsCount,
+//                    'states' => $statesCount,
+//                    'quantity' => [
+//                        'value' => $sectionsIncrease,
+//                        'increase' => $increase
+//                    ]
+//                ];
+//
+//                //Step 18: Add the term array to the main array
+//                $data[] = $termData;
+//            }
+//            return $data;
+//        } catch (ResourceNotFoundException $e) {
+//            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+//        } catch (Exception $e) {
+//            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
+//        }
+//    }
 }

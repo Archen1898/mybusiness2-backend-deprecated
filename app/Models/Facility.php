@@ -3,14 +3,13 @@
 namespace App\Models;
 
 //GLOBAL IMPORT
-use App\Models\delete\MeetingPattern;
-use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 //LOCAL IMPORT
+use App\Traits\Uuid;
 
 class Facility extends Model
 {

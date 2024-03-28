@@ -483,5 +483,55 @@ class TermController extends Controller
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
     }
+    /**
+     * @OA\Get(
+     *     path="/api/term/number_instructors_term",
+     *     tags={"Term"},
+     *     summary="Number of instructors per term",
+     *     operationId="getNumberInstructorsPerTerm",
+     *     security={{"bearer":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid status value"
+     *     )
+     * )
+     */
+    public function getNumberInstructorsPerTerm(): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Numbers of instructors successfully fetched.', $this->termRepository->numberInstructorsPerTerm(), null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
+    /**
+     * @OA\Get(
+     *     path="/api/term/term_details",
+     *     tags={"Term"},
+     *     summary="Term details and sections",
+     *     operationId="getTermDetails",
+     *     security={{"bearer":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid status value"
+     *     )
+     * )
+     */
+    public function getTermDetails(): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Term details successfully fetched.', $this->termRepository->termDetails(), null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
 
 }
