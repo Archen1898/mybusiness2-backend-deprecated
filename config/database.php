@@ -17,6 +17,12 @@ return [
 
     'default' => env('DB_CONNECTION', 'sqlsrv'),
 
+    /* Schemas
+    | Be able to establish in the array the names of the schemas that will be used in the sqlserver database
+    */
+    'schemas'=>['ac','gn'],
+
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections

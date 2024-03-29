@@ -19,8 +19,7 @@ class Session extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'code'=>'string',
-        'number'=>'string',
+        'name'=>'string',
         'active'=>'boolean'
     ];
 
