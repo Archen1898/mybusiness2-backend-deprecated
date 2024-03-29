@@ -125,7 +125,7 @@ class SessionRepository implements CrudInterface,ActiveInterface
 
     public function dataFormat(array $request, Session $session):object|null
     {
-        $session->name = $request['name'];
+        $session->code = $request['code'];
         $session->active = $request['active'];
         return $session;
     }

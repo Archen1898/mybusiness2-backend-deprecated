@@ -28,16 +28,16 @@ class SessionRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required','string','max:10',Rule::unique($this->getDbDefault('ac.sessions'))->ignore($this->id)],
+            'code' => ['required','string','max:10',Rule::unique($this->getDbDefault('ac.sessions'))->ignore($this->id)],
             'active' => ['boolean','nullable']
         ];
     }
     public function messages():array
     {
         return [
-            'name.required' => 'Required field.',
-            'name.unique' => 'There is already a room with this name.',
-            'name.max' => 'Field must have a maximum of 10 characters.',
+            'code.required' => 'Required field.',
+            'code.unique' => 'There is already a room with this name.',
+            'code.max' => 'Field must have a maximum of 10 characters.',
             'active.boolean' => 'Field must be type 1 or 0.'
         ];
     }

@@ -32,8 +32,6 @@ return new class extends Migration
                 ->onUpdate('cascade');
 
             $table->string('sec_code',2)->nullable();
-            $table->string('sec_number',2)->nullable();
-
             $table->integer('cap')->nullable();
 
             //defined relation with table instructor mode
