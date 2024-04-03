@@ -17,6 +17,12 @@ return [
 
     'default' => env('DB_CONNECTION', 'sqlsrv'),
 
+    /* Schemas
+    | Be able to establish in the array the names of the schemas that will be used in the sqlserver database
+    */
+    'schemas'=>['ac','gn'],
+
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -81,11 +87,11 @@ return [
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', 'cob-campusdbdev.ad.fiu.edu'),
+            'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '1433'),
-            'database' => env('DB_DATABASE', 'mybusiness2.0'),
-            'username' => env('DB_USERNAME', 'campusedge'),
-            'password' => env('DB_PASSWORD', 'CBAte@mCF'),
+            'database' => env('DB_DATABASE', 'mybusiness2'),
+            'username' => env('DB_USERNAME', 'sa'),
+            'password' => env('DB_PASSWORD', '$Evanmage123'),
             'charset' => 'utf8',
             'prefix' => '',
 //            'prefix_indexes' => true,

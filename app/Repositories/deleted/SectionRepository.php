@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\deleted;
 
 //GLOBAL IMPORT
 use Exception;
@@ -134,7 +134,7 @@ class SectionRepository implements CrudInterface
             // Step 4: Save the new section
             $newSection->save();
 
-            // Step 5: Assign the meeting pattern to the new section
+            // Step 5: Assign the mating pattern to the new section
             $this->createMeetingPattern($request, $newSection->id);
 
             // Step 6: Return the new created section

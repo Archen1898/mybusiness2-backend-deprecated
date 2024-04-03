@@ -4400,13 +4400,138 @@
                 ]
             }
         },
-        "/api/section/{id}": {
-            "get": {
+        "/api/section/add": {
+            "post": {
                 "tags": [
                     "Section"
                 ],
-                "summary": "Get section by ID",
-                "operationId": "showSection",
+                "summary": "Create a new section",
+                "operationId": "178a361c226edec079ef477745a39f52",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "properties": {
+                                            "caps": {
+                                                "type": "boolean"
+                                            },
+                                            "term_id": {
+                                                "type": "uuid"
+                                            },
+                                            "course_id": {
+                                                "type": "uuid"
+                                            },
+                                            "sec_code": {
+                                                "type": "string"
+                                            },
+                                            "cap": {
+                                                "type": "integer"
+                                            },
+                                            "instructor_mode_id": {
+                                                "type": "uuid"
+                                            },
+                                            "campus_id": {
+                                                "type": "uuid"
+                                            },
+                                            "starting_date": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "program_id": {
+                                                "type": "uuid"
+                                            },
+                                            "cohorts": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "combined": {
+                                                "type": "boolean"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "created_by": {
+                                                "type": "string"
+                                            },
+                                            "comment": {
+                                                "type": "string"
+                                            },
+                                            "internal_note": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "caps": "1",
+                                    "term_id": "2501",
+                                    "course_id": "3001",
+                                    "sec_code": "RVD",
+                                    "cap": "123",
+                                    "instructor_mode_id": "123",
+                                    "campus_id": "123",
+                                    "starting_date": "2024-01-10T22:18:54.927000Z",
+                                    "program_id": 123,
+                                    "cohorts": "exampleCohorts",
+                                    "status": "exampleStatus",
+                                    "combined": "1",
+                                    "comment": "exampleComment",
+                                    "created_at": "2024-01-10T22:18:54.927000Z",
+                                    "updated_at": "2024-01-10T22:18:54.927000Z",
+                                    "created_by": "exampleCreated_by"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/section/update/{id}": {
+            "put": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Update a section",
+                "operationId": "updateSection",
                 "parameters": [
                     {
                         "name": "id",
@@ -4420,12 +4545,115 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "properties": {
+                                            "caps": {
+                                                "type": "boolean"
+                                            },
+                                            "term_id": {
+                                                "type": "uuid"
+                                            },
+                                            "course_id": {
+                                                "type": "uuid"
+                                            },
+                                            "sec_code": {
+                                                "type": "string"
+                                            },
+                                            "cap": {
+                                                "type": "integer"
+                                            },
+                                            "instructor_mode_id": {
+                                                "type": "uuid"
+                                            },
+                                            "campus_id": {
+                                                "type": "uuid"
+                                            },
+                                            "starting_date": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "program_id": {
+                                                "type": "uuid"
+                                            },
+                                            "cohorts": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "combined": {
+                                                "type": "boolean"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date"
+                                            },
+                                            "created_by": {
+                                                "type": "string"
+                                            },
+                                            "comment": {
+                                                "type": "string"
+                                            },
+                                            "internal_note": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "caps": "1",
+                                    "term_id": "2501",
+                                    "course_id": "3001",
+                                    "sec_code": "RVD",
+                                    "cap": "123",
+                                    "instructor_mode_id": "123",
+                                    "campus_id": "123",
+                                    "starting_date": "2024-01-10T22:18:54.927000Z",
+                                    "program_id": 123,
+                                    "cohorts": "exampleCohorts",
+                                    "status": "exampleStatus",
+                                    "combined": "1",
+                                    "comment": "exampleComment",
+                                    "created_at": "2024-01-10T22:18:54.927000Z",
+                                    "updated_at": "2024-01-10T22:18:54.927000Z",
+                                    "created_by": "exampleCreated_by"
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "successful operation"
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
-                    "400": {
-                        "description": "Invalid status value"
+                    "422": {
+                        "description": "Validation error"
                     }
                 },
                 "security": [
@@ -5132,6 +5360,50 @@
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/term/number_instructors_term": {
+            "get": {
+                "tags": [
+                    "Term"
+                ],
+                "summary": "Number of instructors per term",
+                "operationId": "getNumberInstructorsPerTerm",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/term/term_details": {
+            "get": {
+                "tags": [
+                    "Term"
+                ],
+                "summary": "Term details and sections",
+                "operationId": "getTermDetails",
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -6013,6 +6285,16 @@
                         "bearer": []
                     }
                 ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
             }
         }
     }

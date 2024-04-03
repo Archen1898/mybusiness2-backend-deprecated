@@ -18,7 +18,7 @@ return new class extends Migration
             $table->time('start_time')->nullable()->format('H:i');
             $table->time('end_time')->nullable()->format('H:i');
 
-            //defined relation with table facilities
+            //Defined relation with table facilities
             $table->uuid('facility_id');
             $table->foreign('facility_id')
                 ->references('id')
@@ -26,7 +26,7 @@ return new class extends Migration
                 ->onDelete('no action')
                 ->onUpdate('cascade');
 
-            //defined relation with table section
+            //Defined relation with table section
             $table->uuid('section_id');
             $table->foreign('section_id')
                 ->references('id')
@@ -34,7 +34,7 @@ return new class extends Migration
                 ->onDelete('no action')
                 ->onUpdate('no action');
 
-            //defined relation with table user
+            //Defined relation with table user
             $table->uuid('user_id');
             $table->foreign('user_id')
                 ->references('id')

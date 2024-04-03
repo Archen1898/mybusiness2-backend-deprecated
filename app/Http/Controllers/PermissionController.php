@@ -12,6 +12,8 @@ use App\Traits\ResponseTraits;
 use App\Repositories\PermissionRepository;
 use App\Http\Requests\PermissionRequest;
 
+
+
 class PermissionController extends Controller
 {
     protected PermissionRepository $permissionRepository;
@@ -42,7 +44,6 @@ class PermissionController extends Controller
      */
     public function indexPermissions(): JsonResponse
     {
-//        $this->authorize("List of permissions.");
         try {
             return $this->response(Response::HTTP_OK, 'Permissions successfully fetched.', $this->permissionRepository->viewAll(), null);
         } catch (Exception $exception) {

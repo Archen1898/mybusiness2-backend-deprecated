@@ -20,7 +20,6 @@ class Session extends Model
 
     protected $fillable = [
         'code'=>'string',
-        'number'=>'string',
         'active'=>'boolean'
     ];
 
