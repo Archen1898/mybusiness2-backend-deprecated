@@ -31,7 +31,16 @@ return new class extends Migration
                 ->onDelete('no action')
                 ->onUpdate('cascade');
 
-            $table->string('sec_code',2)->nullable();
+            
+
+            //defined relation with table session
+            $table->uuid('session_id');
+            $table->foreign('session_id')
+                ->references('id')
+                ->on('ac.sessions')
+                ->onDelete('no action')
+                ->onUpdate('cascade');
+
             $table->integer('cap')->nullable();
 
             //defined relation with table instructor mode

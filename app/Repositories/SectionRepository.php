@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 //GLOBAL IMPORT
+use App\Models\CombinedSection;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -22,37 +23,123 @@ use App\Exceptions\ResourceNotFoundException;
 use App\Http\Requests\SectionDuplicateRequest;
 class SectionRepository implements CrudInterface
 {
+    protected Carbon $currentDate;
+
+    public function __construct()
+    {
+        $this->currentDate = Carbon::now();
+    }
     /**
      * @throws Exception
      */
+
+    // Get all sections of the current term
     public function viewAll(): Model|Collection|null|array
     {
         try {
+            // Step 1: Get the last term stored in the database
+            $latestTerm = Term::where('begin_dt', '<=', $this->currentDate)
+                ->where('end_dt', '>=', $this->currentDate)
+                ->first();
 
-            // Step 1: Get the last 5 terms stored in the database
-            $latestTerms = Term::orderByDesc('number')->take(5)->pluck('id');
-            if ($latestTerms->isEmpty()){
+            if (!$latestTerm) {
                 throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
             }
 
-            // Step 2: Get the sections associated with the last 5 terms
-            $sections = Section::whereIn('term_id', $latestTerms)
-                ->with('term', 'course.department', 'instructorMode', 'campus', 'program','meetingPatterns.facility','meetingPatterns.user')
+            // Step 2: Get the sections associated with the last term
+            $sections = Section::where('term_id', $latestTerm->id)
+                ->with('term', 'session', 'course.department', 'instructorMode', 'campus', 'program','meetingPatterns.facility','meetingPatterns.user','combinedSections.section.course','combinedSections.section.session')
                 ->get();
 
-            if ($sections->isEmpty()){
+            if ($sections->isEmpty()) {
                 throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
             }
 
             // Step 3: Return the sections
             return $sections;
-
         } catch (ResourceNotFoundException $e) {
-            throw new ResourceNotFoundException($e->getMessage(),$e->getCode());
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
-            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+
+
+    /**
+     * @throws ResourceNotFoundException
+     * @throws Exception
+     */
+    // Obtain an array of objects that contains the course and sec of all the sections according to the term
+
+    public function viewAllSectionsByTermID($termId): array
+    {
+        try {
+            //Step 1: Get all sections that belong to the term with the given ID
+            $sections = Section::with('term','session', 'course')
+                ->where('term_id', $termId)
+                ->get();
+
+            if ($sections->isEmpty()) {
+                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+            }
+
+            //Step 2: Create an array of objects with the combination of session.code + course.name
+            $result = $sections->map(function ($section) {
+                return [
+                    'name' => $section->session->code . '-' . $section->course->code
+                ];
+            });
+
+            // Step 3: Return the array
+            return $result->toArray();
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+//    public function viewAllSectionsByTermID($termId,$criteria): array
+//    {
+//        try {
+//            // Step 1: Get all sections that belong to the term with the given ID
+//            $sectionsQuery = Section::with('term', 'session', 'course')
+//                ->where('term_id', $termId);
+//
+//            // Step 2: Filter sections based on the search term
+//            if ($criteria) {
+//                $sectionsQuery->where(function ($query) use ($criteria) {
+//                    $query->whereRaw("CONCAT(session.code, '-', course.code) LIKE ?", ['%'.$criteria.'%']);
+//                });
+//            }
+//
+//            $sections = $sectionsQuery->get();
+//
+//            if ($sections->isEmpty()) {
+//                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+//            }
+//
+//            // Step 3: Create an array of objects with the combination of session.code + course.name
+//            $result = $sections->map(function ($section) {
+//                return [
+//                    'name' => $section->session->code . '-' . $section->course->code
+//                ];
+//            });
+//
+//            // Step 4: Return the array
+//            return $result->toArray();
+//        } catch (ResourceNotFoundException $e) {
+//            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+//        } catch (Exception $e) {
+//            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+
+
 
     /**
      * @throws Exception
@@ -60,7 +147,7 @@ class SectionRepository implements CrudInterface
     public function viewById($id): Model|Collection|null
     {
         try {
-            $section = Section::with(['term', 'course', 'instructorMode', 'campus', 'program', 'meetingPatterns'])->find($id);
+            $section = Section::with(['term', 'course', 'instructorMode', 'campus', 'program', 'meetingPatterns','combinedSections'])->find($id);
             if (!$section){
                 throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundById'));
             }
@@ -92,37 +179,37 @@ class SectionRepository implements CrudInterface
             $requestMeetingPatterns = $request['meeting_patterns'];
             $combinedState = false;
 
-            // Step 2: Find duplicate sections that have the same meeting_patterns
-            $duplicatedSections = Section::with('meetingPatterns')
-                ->where('caps', $request['caps'])
-                ->where('term_id', strtolower($request['term_id']))
-                ->where('course_id', strtolower($request['course_id']))
-                ->where('sec_code', $request['sec_code'])
-                ->where('sec_number', $request['sec_number'])
-                ->where('cap', $request['cap'])
-                ->where('instructor_mode_id', strtolower($request['instructor_mode_id']))
-                ->where('campus_id', strtolower($request['campus_id']))
-                ->where('starting_date', $request['starting_date'])
-                ->where('ending_date', $request['ending_date'])
-                ->where('program_id', strtolower($request['program_id']))
-                ->where('cohorts', $request['cohorts'])
-                ->where('status', $request['status'])
-                ->get();
-
-            if ($duplicatedSections->count()>0){
-                // Step 2: Update duplicate sections
-                foreach ($duplicatedSections as $section) {
-                    foreach ($section->meetingPatterns as $patternIndex => $pattern) {
-                        foreach ($requestMeetingPatterns as $requestPatternIndex => $requestPattern) {
-                            if ($this->comparePatterns($pattern, $requestPattern) && count($section->meetingPatterns) === count($requestMeetingPatterns)) {
-                                $section->combined = true;
-                                $combinedState = true;
-                                $section->save();
-                            }
-                        }
-                    }
-                }
-            }
+//            // Step 2: Find duplicate sections that have the same meeting_patterns
+//            $duplicatedSections = Section::with('meetingPatterns')
+//                ->where('caps', $request['caps'])
+//                ->where('term_id', strtolower($request['term_id']))
+//                ->where('course_id', strtolower($request['course_id']))
+//                ->where('sec_code', $request['sec_code'])
+//                ->where('sec_number', $request['sec_number'])
+//                ->where('cap', $request['cap'])
+//                ->where('instructor_mode_id', strtolower($request['instructor_mode_id']))
+//                ->where('campus_id', strtolower($request['campus_id']))
+//                ->where('starting_date', $request['starting_date'])
+//                ->where('ending_date', $request['ending_date'])
+//                ->where('program_id', strtolower($request['program_id']))
+//                ->where('cohorts', $request['cohorts'])
+//                ->where('status', $request['status'])
+//                ->get();
+//
+//            if ($duplicatedSections->count()>0){
+//                // Step 2: Update duplicate sections
+//                foreach ($duplicatedSections as $section) {
+//                    foreach ($section->meetingPatterns as $patternIndex => $pattern) {
+//                        foreach ($requestMeetingPatterns as $requestPatternIndex => $requestPattern) {
+//                            if ($this->comparePatterns($pattern, $requestPattern) && count($section->meetingPatterns) === count($requestMeetingPatterns)) {
+//                                $section->combined = true;
+//                                $combinedState = true;
+//                                $section->save();
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
             // Step 3: Create a new section
             $section = new Section();
@@ -134,15 +221,23 @@ class SectionRepository implements CrudInterface
             // Step 4: Save the new section
             $newSection->save();
 
+<<<<<<< Updated upstream
             // Step 5: Assign the meeting pattern to the new section
+=======
+            // Step 5: Assign the mating patterns to the new section
+>>>>>>> Stashed changes
             $this->createMeetingPattern($request, $newSection->id);
 
-            // Step 6: Return the new created section
+            // Step 6: Assign the combined sections to the new section
+            $this->createCombinedSection($request);
+
+            // Step 7: Return the new created section
             return $newSection;
         } catch (ResourceNotFoundException $e) {
             throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
         } catch (Exception $e) {
-            throw new Exception(trans('messages.exception'), Response::HTTP_INTERNAL_SERVER_ERROR);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+//            throw new Exception(trans('messages.exception'), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -320,8 +415,7 @@ class SectionRepository implements CrudInterface
         $section->caps = $request['caps'];
         $section->term_id = $request['term_id'];
         $section->course_id = $request['course_id'];
-        $section->sec_code = $request['sec_code'];
-        $section->sec_number = $request['sec_number'];
+        $section->session_id = $request['session_id'];
         $section->cap = $request['cap'];
         $section->instructor_mode_id = $request['instructor_mode_id'];
         $section->campus_id = $request['campus_id'];
@@ -360,6 +454,32 @@ class SectionRepository implements CrudInterface
         try {
             $meetingPatterns = $this->dataFormatMeetingPattern($request,$id);
             foreach ($meetingPatterns as $item){
+                $item->save();
+            }
+        }catch (Exception $exception){
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    public function dataFormatCombinedSection(array $request): array
+    {
+        $array = [];
+        foreach ($request['combined_sections'] as $combined){
+            $combinedSection = new CombinedSection();
+            $combinedSection->section_id = $combined['section_id'];
+            $array[] = $combinedSection;
+        }
+        return $array;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function createCombinedSection($request): void
+    {
+        try {
+            $combinedSection = $this->dataFormatCombinedSection($request);
+            foreach ($combinedSection as $item){
                 $item->save();
             }
         }catch (Exception $exception){

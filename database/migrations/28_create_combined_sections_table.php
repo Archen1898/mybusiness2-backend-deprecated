@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('combined_sections', function (Blueprint $table) {
+        Schema::create('ac.combined_sections', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('code');
 
             //Defined relation with table section
             $table->uuid('section_id');
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('combined_sections');
+        Schema::dropIfExists('ac.combined_sections');
     }
 };

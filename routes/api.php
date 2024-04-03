@@ -236,7 +236,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('section/index','indexSection')->middleware('permission:List of sections');
         Route::get('section/{id}', 'showSection')->middleware('permission:Search section by ID');
         Route::get('section/graph/quantity','quantitySection')->middleware('permission:List of sections');
-//        Route::get('section/info/sections','getTermsInfo')->middleware('permission:List of sections');
+        Route::get('section/list/{id}','getSectionsByTermId')->middleware('permission:List of sections');
         Route::post('section/add', 'addSection')->middleware('permission:Search sections by status');
         Route::post('section/duplicate', 'duplicateSections')->middleware('permission:Duplicate a section');
         Route::put('section/update/{id}', 'updateSection')->middleware('permission:Create a section');
