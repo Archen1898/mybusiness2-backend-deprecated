@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('ac.sessions', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('code',2)->nullable();
-            $table->string('number')->nullable();
+            $table->string('code',10)->unique();
             $table->boolean('active')->nullable();
         });
     }

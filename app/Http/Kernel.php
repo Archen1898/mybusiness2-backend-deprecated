@@ -2,8 +2,11 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\Cors;
+//GLOBAL IMPORT
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+
+//LOCAL IMPORT
+use App\Http\Middleware\CorsMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -18,7 +21,7 @@ class Kernel extends HttpKernel
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
-       \App\Http\Middleware\Cors::class,
+        \App\Http\Middleware\CorsMiddleware::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
@@ -67,7 +70,7 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'cors' => \App\Http\Middleware\Cors::class,
+        'cors' => \App\Http\Middleware\CorsMiddleware::class,
     ];
 
     protected $routeMiddleware = [

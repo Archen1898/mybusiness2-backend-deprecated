@@ -39,7 +39,7 @@ class SessionRepository implements CrudInterface,ActiveInterface
     public function viewAll()
     {
         try {
-            $sessions = Session::orderBy('code','desc')->get();
+            $sessions = Session::orderBy('name','desc')->get();
             if ($sessions->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.session.exceptionNotFoundAll'));
             }
@@ -126,7 +126,6 @@ class SessionRepository implements CrudInterface,ActiveInterface
     public function dataFormat(array $request, Session $session):object|null
     {
         $session->code = $request['code'];
-        $session->number = $request['number'];
         $session->active = $request['active'];
         return $session;
     }
