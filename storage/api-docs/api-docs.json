@@ -4402,6 +4402,8 @@
         },
         "/api/section/add": {
             "post": {
+        "/api/section/add": {
+            "post": {
                 "tags": [
                     "Section"
                 ],

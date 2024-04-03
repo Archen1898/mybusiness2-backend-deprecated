@@ -25,7 +25,7 @@ class Section extends Model
         'caps'=>'boolean',
         'term_id'=>'uuid',
         'course_id'=>'uuid',
-        'sec_code'=>'string',
+        'session_id'=>'uuid',
         'sec_number'=>'string',
         'cap'=>'integer',
         'instructor_mode_id'=>'uuid',
@@ -60,9 +60,17 @@ class Section extends Model
     {
         return $this->hasMany(MeetingPattern::class);
     }
+    public function combinedSections(): HasMany
+    {
+        return $this->hasMany(CombinedSection::class);
+    }
     public function instructorMode(): BelongsTo
     {
         return $this->belongsTo(InstructorMode::class);
+    }
+    public function session(): BelongsTo
+    {
+        return $this->belongsTo(Session::class);
     }
     public function user(): BelongsTo
     {

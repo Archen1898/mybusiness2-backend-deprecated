@@ -113,6 +113,7 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(CollegeController::class)->group(function(){
         Route::get('college/index','indexCollege')->middleware('permission:List of colleges');
         Route::get('college/asdfg','getSection')->middleware('permission:List of colleges');
+        Route::get('college/asdfg','getSection')->middleware('permission:List of colleges');
         Route::get('college/{id}', 'showCollege')->middleware('permission:Search college by ID');
         Route::get('college/status/{status}', 'showCollegeByStatus')->middleware('permission:Search colleges by status');
         Route::post('college/add', 'addCollege')->middleware('permission:Create a college');

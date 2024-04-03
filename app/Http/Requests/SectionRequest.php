@@ -2,21 +2,13 @@
 namespace App\Http\Requests;
 
 //GLOBAL IMPORT
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 
-//LOCAL IMPORT
-
 
 class SectionRequest extends ApiFormRequest
 {
-
-    protected function failedValidation(Validator $validator): void
-    {
-        throw new ValidationException($validator);
-    }
 
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +21,7 @@ class SectionRequest extends ApiFormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array|string>
+     * @return array<string|array|string>
      */
     public function rules(): array
     {
@@ -37,8 +29,7 @@ class SectionRequest extends ApiFormRequest
             'caps' => ['boolean', 'nullable'],
             'term_id' => ['required', 'uuid', 'max:36'],
             'course_id' => ['required', 'uuid', 'max:36'],
-            'sec_code' => ['string', 'nullable', 'max:2'],
-            'sec_number' => ['string', 'nullable', 'max:2'],
+            'session_id' => ['required', 'uuid', 'max:36'],
             'cap' => ['integer', 'nullable'],
             'instructor_mode_id' => ['required', 'uuid', 'max:36'],
             'campus_id' => ['required', 'uuid', 'max:36'],
@@ -51,11 +42,13 @@ class SectionRequest extends ApiFormRequest
             'internal_note' => ['string', 'nullable', 'max:255'],
             'meeting_patterns' => 'required|array',
             'meeting_patterns.*.day' => ['required', 'string'],
-//            'meeting_patterns.*.start_time' => 'required|date_format:h:i A',
-//            'meeting_patterns.*.end_time' => 'required|date_format:h:i A',
-            'meeting_patterns.*.facility_id' => 'required|string',
-            'meeting_patterns.*.user_id' => 'required|string',
-            'meeting_patterns.*.primary_instructor' => 'required|boolean',
+            'meeting_patterns.*.start_time' => 'required|date_format:H:i',
+            'meeting_patterns.*.end_time' => 'required|date_format:H:i',
+            'meeting_patterns.*.facility_id' => ['required', 'uuid'],
+            'meeting_patterns.*.user_id' => ['required', 'uuid'],
+            'meeting_patterns.*.primary_instructor' => ['required', 'boolean'],
+            'combined_sections' => ['array', 'nullable'],
+            'combined_sections.*.section_id'=> ['required', 'string']
         ];
     }
 
@@ -69,8 +62,9 @@ class SectionRequest extends ApiFormRequest
             'course_id.required' => 'Required field.',
             'course_id.uuid' => 'Field must be type uuid.',
             'course_id.max' => 'Field must have a maximum of 36 characters.',
-            'sec_code.max' => 'Field must have a maximum of 2 characters.',
-            'sec_number.max' => 'Field must have a maximum of 2 characters.',
+            'session_id.required' => 'Required field.',
+            'session_id.uuid' => 'Field must be type uuid.',
+            'session_id.max' => 'Field must have a maximum of 36 characters.',
             'cap.integer' => 'Field must be type number.',
             'instructor_mode_id.required' => 'Required field.',
             'instructor_mode_id.uuid' => 'Field must be type uuid.',
@@ -94,12 +88,13 @@ class SectionRequest extends ApiFormRequest
             'meeting_patterns.*.day.required' => 'El día es obligatorio para cada patrón de reunión.',
             'meeting_patterns.*.day.in' => 'The day is mandatory for each meeting pattern.',
             'meeting_patterns.*.start_time.required' => 'The start time is mandatory for each meeting pattern.',
-            'meeting_patterns.*.start_time.date_format' => 'The start time format must be hh:mm AM/PM.',
+            'meeting_patterns.*.start_time.date_format' => 'The start time format must be hh:mm.',
             'meeting_patterns.*.end_time.required' => 'The end time is required for each meeting pattern.',
-            'meeting_patterns.*.end_time.date_format' => 'The end time format must be hh:mm AM/PM.',
+            'meeting_patterns.*.end_time.date_format' => 'The end time format must be hh:mm.',
             'meeting_patterns.*.facility_id.required' => 'The facility ID is required for each meeting pattern.',
             'meeting_patterns.*.user_id.required' => 'The user ID is required for each meeting pattern.',
-            'meeting_patterns.*.primary_instructor.required' => 'The designation of lead instructor is mandatory for each meeting pattern.'
+            'meeting_patterns.*.primary_instructor.required' => 'The designation of lead instructor is mandatory for each meeting pattern.',
+            'combined_sections.array' => 'The combined sections field must be an array.',
         ];
     }
 }

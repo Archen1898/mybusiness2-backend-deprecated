@@ -526,4 +526,13 @@ class SectionController extends Controller
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
     }
+
+    public function getSectionsByTermId(string $termId, $criteria): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Info successfully fetched.', $this->sectionRepository->viewAllSectionsByTermID($termId,$criteria),null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
 }
