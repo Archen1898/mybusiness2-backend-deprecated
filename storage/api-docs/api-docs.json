@@ -4402,8 +4402,6 @@
         },
         "/api/section/add": {
             "post": {
-        "/api/section/add": {
-            "post": {
                 "tags": [
                     "Section"
                 ],
@@ -4423,6 +4421,9 @@
                                                 "type": "uuid"
                                             },
                                             "course_id": {
+                                                "type": "uuid"
+                                            },
+                                            "session_id": {
                                                 "type": "uuid"
                                             },
                                             "sec_code": {
@@ -4469,6 +4470,18 @@
                                             },
                                             "internal_note": {
                                                 "type": "string"
+                                            },
+                                            "meeting_patterns": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string",
+                                                    "format": "string",
+                                                    "example": [
+                                                        "Monday",
+                                                        "Wednesday"
+                                                    ]
+                                                },
+                                                "collectionFormat": "multi"
                                             }
                                         },
                                         "type": "object"
@@ -4491,7 +4504,12 @@
                                     "comment": "exampleComment",
                                     "created_at": "2024-01-10T22:18:54.927000Z",
                                     "updated_at": "2024-01-10T22:18:54.927000Z",
-                                    "created_by": "exampleCreated_by"
+                                    "created_by": "exampleCreated_by",
+                                    "ending_date": "2024-01-10T22:18:54.927000Z",
+                                    "meeting_patterns": [
+                                        "Monday",
+                                        "Wednesday"
+                                    ]
                                 }
                             }
                         }
@@ -4656,6 +4674,146 @@
                     },
                     "422": {
                         "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/section/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Delete a Section",
+                "operationId": "deleteSection",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "String ID",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "0C6A36BA-10E4-438F-BA86-0D5B68A2BB15"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/section/duplicate": {
+            "post": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Duplicate all sections from an origin term to a Destination term",
+                "operationId": "duplicateSections",
+                "parameters": [
+                    {
+                        "name": "term_id_origin",
+                        "in": "path",
+                        "description": "Origin term ID",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "2401"
+                        }
+                    },
+                    {
+                        "name": "term_id_destination",
+                        "in": "path",
+                        "description": "Destination Term ID",
+                        "required": true,
+                        "explode": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "2501"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/section/graph/quantity": {
+            "get": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Get number of Sections per term per Instructor",
+                "operationId": "quantitySection",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/section/info/sections": {
+            "get": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Get info on the last six terms. Retrieves information such as term start date, term end date, number of sections, and unique instructors",
+                "operationId": "getTermsInfo",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
                     }
                 },
                 "security": [

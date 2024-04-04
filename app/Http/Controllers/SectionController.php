@@ -74,6 +74,10 @@ class SectionController extends Controller
      *                          type="uuid"
      *                      ),
      *                      @OA\Property(
+     *                          property="session_id",
+     *                          type="uuid"
+     *                      ),
+     *                      @OA\Property(
      *                          property="sec_code",
      *                          type="string"
      *                      ),
@@ -129,6 +133,12 @@ class SectionController extends Controller
      *                          property="internal_note",
      *                          type="string",
      *                      ),
+     *                      @OA\Property(
+     *                          property="meeting_patterns",
+     *                          type="array",
+     *                          collectionFormat="multi",
+     *                          @OA\Items(type="object", format="object", example={meeting_patterns.0,meeting_patterns.1}),
+     *                      ),
      *                 ),
      *                 example={
      *                      "caps": "1",
@@ -147,6 +157,8 @@ class SectionController extends Controller
      *                      "created_at": "2024-01-10T22:18:54.927000Z",
      *                      "updated_at": "2024-01-10T22:18:54.927000Z",
      *                      "created_by": "exampleCreated_by",
+     *                      "ending_date": "2024-01-10T22:18:54.927000Z",
+     *                      "meeting_patterns": {meeting_patterns.0,meeting_patterns.1}
      *                }
      *             )
      *         )
@@ -322,7 +334,7 @@ class SectionController extends Controller
      * Delete a Section
      * @OA\Delete(
      *     path="/api/section/delete/{id}",
-     *     tags={"User"},
+     *     tags={"Section"},
      *     operationId="deleteSection",
      *     @OA\Parameter(
      *         name="id",
@@ -359,13 +371,13 @@ class SectionController extends Controller
     }
 
     /**
-     * Duplicate all sections from an origin term to a  Destination term
+     * Duplicate all sections from an origin term to a Destination term
      * @OA\Post (
      *     path="/api/section/duplicate",
      *     tags={"Section"},
      *     operationId="duplicateSections",
      *     @OA\Parameter(
-     *         name="term_id",
+     *         name="term_id_origin",
      *         in="path",
      *         description="Origin term ID",
      *         required=true,
@@ -376,7 +388,7 @@ class SectionController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="term_id",
+     *         name="term_id_destination",
      *         in="path",
      *         description="Destination Term ID",
      *         required=true,
@@ -386,102 +398,7 @@ class SectionController extends Controller
      *             type="string",
      *         )
      *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                      type="object",
-     *                      @OA\Property(
-     *                          property="caps",
-     *                          type="boolean"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="term_id",
-     *                          type="uuid"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="course_id",
-     *                          type="uuid"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="sec_code",
-     *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="cap",
-     *                          type="integer"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="instructor_mode_id",
-     *                          type="uuid"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="campus_id",
-     *                          type="uuid"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="starting_date",
-     *                          type="datetime"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="program_id",
-     *                          type="uuid"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="cohorts",
-     *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="status",
-     *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="combined",
-     *                          type="boolean"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="created_at",
-     *                          type="date"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="updated_at",
-     *                          type="date"
-     *                      ),
-     *                      @OA\Property(
-     *                      property="created_by",
-     *                      type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="comment",
-     *                          type="string"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="internal_note",
-     *                          type="string",
-     *                      ),
-     *                 ),
-     *                 example={
-     *                      "caps": "1",
-     *                      "term_id": "2501",
-     *                      "course_id": "3001",
-     *                      "sec_code": "RVD",
-     *                      "cap": "123",
-     *                      "instructor_mode_id": "123",
-     *                      "campus_id": "123",
-     *                      "starting_date": "2024-01-10T22:18:54.927000Z",
-     *                      "program_id": 123,
-     *                      "cohorts": "exampleCohorts",
-     *                      "status": "exampleStatus",
-     *                      "combined":"1",
-     *                      "comment": "exampleComment",
-     *                      "created_at": "2024-01-10T22:18:54.927000Z",
-     *                      "updated_at": "2024-01-10T22:18:54.927000Z",
-     *                      "created_by": "exampleCreated_by",
-     *                }
-     *             )
-     *         )
-     *      ),
+     
      *     security={{"bearer":{}}},
      *      @OA\Response(
      *          response=200,
@@ -509,6 +426,24 @@ class SectionController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/section/graph/quantity",
+     *     tags={"Section"},
+     *     summary="Get number of Sections per term per Instructor",
+     *     operationId="quantitySection",
+     *     security={{"bearer":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid status value"
+     *     )
+     * )
+     */
+
     public function quantitySection(): JsonResponse
     {
         try {
@@ -517,6 +452,24 @@ class SectionController extends Controller
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/section/info/sections",
+     *     tags={"Section"},
+     *     summary="Get info on the last six terms. Retrieves information such as term start date, term end date, number of sections, and unique instructors",
+     *     operationId="getTermsInfo",
+     *     security={{"bearer":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid status value"
+     *     )
+     * )
+     */
 
     public function getTermsInfo(): JsonResponse
     {
