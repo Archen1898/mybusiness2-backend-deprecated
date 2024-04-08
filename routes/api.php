@@ -154,6 +154,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('term/index','indexTerm')->middleware('permission:List of terms');
         Route::get('term/number_instructors_term','getNumberInstructorsPerTerm')->middleware('permission:List of terms');
         Route::get('term/term_details','getTermDetails')->middleware('permission:List of terms');
+        Route::get('term/term_dates','getTermDates')->middleware('permission:List of terms');
         Route::get('term/{id}', 'showTerm')->middleware('permission:Search term by ID');
         Route::get('term/status/{status}', 'showTermByStatus')->middleware('permission:Search terms by status');
         Route::post('term/add', 'addTerm')->middleware('permission:Create a term');

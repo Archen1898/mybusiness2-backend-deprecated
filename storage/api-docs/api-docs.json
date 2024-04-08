@@ -4400,151 +4400,6 @@
                 ]
             }
         },
-        "/api/section/add": {
-            "post": {
-                "tags": [
-                    "Section"
-                ],
-                "summary": "Create a new section",
-                "operationId": "178a361c226edec079ef477745a39f52",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "": {
-                                        "properties": {
-                                            "caps": {
-                                                "type": "boolean"
-                                            },
-                                            "term_id": {
-                                                "type": "uuid"
-                                            },
-                                            "course_id": {
-                                                "type": "uuid"
-                                            },
-                                            "session_id": {
-                                                "type": "uuid"
-                                            },
-                                            "sec_code": {
-                                                "type": "string"
-                                            },
-                                            "cap": {
-                                                "type": "integer"
-                                            },
-                                            "instructor_mode_id": {
-                                                "type": "uuid"
-                                            },
-                                            "campus_id": {
-                                                "type": "uuid"
-                                            },
-                                            "starting_date": {
-                                                "type": "string",
-                                                "format": "date-time"
-                                            },
-                                            "program_id": {
-                                                "type": "uuid"
-                                            },
-                                            "cohorts": {
-                                                "type": "string"
-                                            },
-                                            "status": {
-                                                "type": "string"
-                                            },
-                                            "combined": {
-                                                "type": "boolean"
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "date"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "date"
-                                            },
-                                            "created_by": {
-                                                "type": "string"
-                                            },
-                                            "comment": {
-                                                "type": "string"
-                                            },
-                                            "internal_note": {
-                                                "type": "string"
-                                            },
-                                            "meeting_patterns": {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "string",
-                                                    "format": "string",
-                                                    "example": [
-                                                        "Monday",
-                                                        "Wednesday"
-                                                    ]
-                                                },
-                                                "collectionFormat": "multi"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object",
-                                "example": {
-                                    "caps": "1",
-                                    "term_id": "2501",
-                                    "course_id": "3001",
-                                    "sec_code": "RVD",
-                                    "cap": "123",
-                                    "instructor_mode_id": "123",
-                                    "campus_id": "123",
-                                    "starting_date": "2024-01-10T22:18:54.927000Z",
-                                    "program_id": 123,
-                                    "cohorts": "exampleCohorts",
-                                    "status": "exampleStatus",
-                                    "combined": "1",
-                                    "comment": "exampleComment",
-                                    "created_at": "2024-01-10T22:18:54.927000Z",
-                                    "updated_at": "2024-01-10T22:18:54.927000Z",
-                                    "created_by": "exampleCreated_by",
-                                    "ending_date": "2024-01-10T22:18:54.927000Z",
-                                    "meeting_patterns": [
-                                        "Monday",
-                                        "Wednesday"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "meta": {
-                                            "type": "object"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
         "/api/section/update/{id}": {
             "put": {
                 "tags": [
@@ -5203,8 +5058,8 @@
                                 "properties": {
                                     "": {
                                         "properties": {
-                                            "term": {
-                                                "type": "string"
+                                            "number": {
+                                                "type": "integer"
                                             },
                                             "semester": {
                                                 "type": "string"
@@ -5282,7 +5137,7 @@
                                 },
                                 "type": "object",
                                 "example": {
-                                    "term": "2023",
+                                    "number": "1248",
                                     "semester": "Fall",
                                     "year": "2023",
                                     "academic_year": "2015-2016",
@@ -5577,6 +5432,23 @@
                         "bearer": []
                     }
                 ]
+            }
+        },
+        "/api/term/term_dates": {
+            "get": {
+                "tags": [
+                    "Term"
+                ],
+                "summary": "Term Dates and Duration",
+                "operationId": "getTermDates",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid status value"
+                    }
+                }
             }
         },
         "/api/user/index": {

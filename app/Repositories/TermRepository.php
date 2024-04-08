@@ -327,6 +327,53 @@ class TermRepository implements CrudInterface,ActiveInterface {
             throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * @throws ResourceNotFoundException
+     * @throws Exception
+     */
+
+    public function termDates():array
+    {
+        try{
+            //Step 1:Get current time and initialize return Array
+            $time = Carbon::now();
+            $termArray = [];
+
+            //Step 2: Get last five terms ordered by semester and year
+            $lastFiveTerms = Term::orderByDesc('number')->take(5)->get();
+            if ($lastFiveTerms->isEmpty()){
+                throw new ResourceNotFoundException(trans('messages.section.exceptionNotFoundAll'));
+            }
+
+            //Step 3: Retrieve term duration, start, and end dates.
+            foreach ($lastFiveTerms as $key => $term) {
+                $termName = ucfirst($term->semester) . $term->year;
+                $termStartDate = date('m/d/y', strtotime($term->begin_dt));
+                $termEndDate = date('m/d/y', strtotime($term->end_dt));
+
+                $beginDate = Carbon::parse($term->begin_dt);
+
+                $TotalDuration = Carbon::parse($termStartDate)->diffInDays(Carbon::parse($termEndDate));
+                $CurrentDuration = Carbon::parse($term->begin_dt)->diffInDays(Carbon::now());
+
+                $termData = [
+                    'Name of Term' => $termName,
+                    'Start Date of Term' => $termStartDate,
+                    'End Date of Term' => $termEndDate,
+                    'DaysPassed' => $CurrentDuration,
+                    'Total Number of Days for the Term' => $TotalDuration
+
+                ];
+                $termArray[] = $termData;
+            }
+            return $termArray;
+        } catch (ResourceNotFoundException $e) {
+            throw new ResourceNotFoundException($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            throw new Exception(trans('messages.exception'), response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 
 

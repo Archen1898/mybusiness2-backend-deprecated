@@ -534,4 +534,31 @@ class TermController extends Controller
         }
     }
 
+
+    /**
+     * @OA\Get(
+     *     path="/api/term/term_dates",
+     *     tags={"Term"},
+     *     summary="Term Dates and Duration",
+     *     operationId="getTermDates",
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid status value"
+     *     )
+     * )
+     */
+
+    public function getTermDates(): JsonResponse
+    {
+        try {
+            return $this->response(Response::HTTP_OK, 'Term dates successfully fetched.', $this->termRepository->termDates(), null);
+        } catch (Exception $exception) {
+            return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
+        }
+    }
+    
 }
