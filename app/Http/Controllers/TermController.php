@@ -143,8 +143,8 @@ class TermController extends Controller
      *                 @OA\Property(
      *                      type="object",
      *                      @OA\Property(
-     *                          property="term",
-     *                          type="string"
+     *                          property="number",
+     *                          type="integer"
      *                      ),
      *                      @OA\Property(
      *                          property="semester",
@@ -228,7 +228,7 @@ class TermController extends Controller
      *                      )
      *                 ),
      *                 example={
-     *                      "term": "2023",
+     *                      "number": "1248",
      *                      "semester": "Fall",
      *                      "year": "2023",
      *                      "academic_year": "2015-2016",
