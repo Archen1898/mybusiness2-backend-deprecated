@@ -6318,6 +6318,101 @@
                     }
                 ]
             }
+        },
+        "/api/guest/add": {
+            "post": {
+                "tags": [
+                    "Guest"
+                ],
+                "summary": "Create a new Guest",
+                "operationId": "38fd60a4087a93d09a1804529daf7d85",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "": {
+                                        "properties": {
+                                            "user_name": {
+                                                "type": "string"
+                                            },
+                                            "first_name": {
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "type": "string"
+                                            },
+                                            "middle_name": {
+                                                "type": "string"
+                                            },
+                                            "visitorOfPID": {
+                                                "type": "string"
+                                            },
+                                            "guest_id": {
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "type": "string"
+                                            },
+                                            "phone_number": {
+                                                "type": "string"
+                                            },
+                                            "password": {
+                                                "type": "string"
+                                            },
+                                            "student": {
+                                                "type": "boolean"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "user_name": "guest1234",
+                                    "first_name": "John",
+                                    "middle_name": "Tom",
+                                    "last_name": "Doe",
+                                    "password": "guest",
+                                    "guest_id": "12345678",
+                                    "visitorOfPID": "6467890",
+                                    "email": "guest@fiu.edu",
+                                    "phone_number": "3053217654",
+                                    "student": "0"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
         }
     },
     "components": {

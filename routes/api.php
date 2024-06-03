@@ -17,6 +17,7 @@ use App\Http\Controllers\ProgramLevelController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleHasPermissionController;
 use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TermController;
@@ -74,6 +75,10 @@ Route::middleware('auth:api')->group(function () {
         Route::put('user/update/{id}', 'updateUser')->middleware('permission:Update an user');
         Route::delete('user/delete/{id}', 'deleteUser')->middleware('permission:Delete an user');
         Route::get('user/role/{name}', 'indexUserByRole')->middleware('permission:Search instructor user');
+    });
+
+    Route::controller(GuestController::class)->group(function(){
+        Route::post('guest/add','create')->middleware('permission:Create an user');
     });
 
     Route::controller(RoleHasPermissionController::class)->group(function(){
