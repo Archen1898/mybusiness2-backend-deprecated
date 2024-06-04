@@ -5,12 +5,14 @@ namespace App\Repositories;
 //GLOBAL IMPORT
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 //LOCAL IMPORT
 use App\Interfaces\CrudInterface;
 use App\Interfaces\ActiveInterface;
 use App\Models\Session;
 use App\Exceptions\ResourceNotFoundException;
+
 
 class SessionRepository implements CrudInterface,ActiveInterface
 {
@@ -39,7 +41,13 @@ class SessionRepository implements CrudInterface,ActiveInterface
     public function viewAll()
     {
         try {
-            $sessions = Session::orderBy('name','desc')->get();
+            Log::info('Creating Session list');
+            //Organize by code instead because no sections exist within the database
+            $sessions = Session::orderBy('code')->get();
+            //$sessions = Session::orderBy('name','desc')->get();
+            Log::info('Creation Successful');
+            Log::info('Printing Session Contents');
+            Log::info('Session Contents:', ['Session'=> $sessions]);
             if ($sessions->isEmpty()){
                 throw new ResourceNotFoundException(trans('messages.session.exceptionNotFoundAll'));
             }

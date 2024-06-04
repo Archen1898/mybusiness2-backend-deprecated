@@ -6,11 +6,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 //LOCAL IMPORT
 use App\Http\Requests\SessionRequest;
 use App\Repositories\SessionRepository;
 use App\Traits\ResponseTraits;
+
 
 class SessionController extends Controller
 {
@@ -42,9 +44,12 @@ class SessionController extends Controller
      */
     public function indexSession(): JsonResponse
     {
+        Log::info('Accessing Controller Function');
         try {
+            Log::info('Attempting Function Execution');
             return $this->response(Response::HTTP_OK, 'Sessions successfully fetched.', $this->sessionRepository->viewAll(), null);
         } catch (Exception $exception) {
+            Log::info('Attempt Failed');
             return $this->response(Response::HTTP_BAD_REQUEST, $exception->getMessage(), [], $exception->getMessage());
         }
     }
